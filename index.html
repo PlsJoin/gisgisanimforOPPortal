@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f7f8fa">
+  <meta name="description" content="場所や予算、目的から、今の自分に合うお店やスポットを探せるお出かけ検索サービス。">
+  <title>YORIMICHI | 条件から見つける、お出かけ先</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --surface: #ffffff;
+      --text: #20252d;
+      --muted: #737b87;
+      --line: #e5e8ed;
+      --accent: #246bce;
+      --accent-hover: #1958ad;
+      --soft-blue: #edf4ff;
+      --radius: 16px;
+      --shadow: 0 8px 30px rgba(24, 38, 60, 0.045);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .site-header {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 max(24px, calc((100vw - 1160px) / 2));
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .header-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 66px 0 35px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border: 1px solid #dce7f7;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    h1 {
+      margin: 19px 0 12px;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.25;
+      letter-spacing: -.055em;
+      font-weight: 800;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .search-panel {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 26px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      gap: 18px;
+    }
+
+    .field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label, .field-label {
+      color: #3b424d;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap .pin {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #7e8998;
+      pointer-events: none;
+    }
+
+    input, select {
+      width: 100%;
+      height: 47px;
+      padding: 0 12px;
+      color: var(--text);
+      background: #fff;
+      border: 1px solid #dce1e8;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .input-wrap input { padding-left: 39px; }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(36,107,206,.11);
+    }
+
+    .filter-section {
+      margin-top: 22px;
+      padding-top: 21px;
+      border-top: 1px solid #edf0f4;
+    }
+
+    .filter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .filter-top .field-label { font-size: 13px; }
+
+    .clear-button {
+      border: 0;
+      padding: 3px 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .clear-button:hover { color: var(--accent); }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 36px;
+      padding: 7px 13px;
+      border: 1px solid #dfe4eb;
+      border-radius: 999px;
+      color: #4b5360;
+      background: #fff;
+      font-size: 13px;
+      transition: .15s;
+    }
+
+    .chip:hover { border-color: #9ab9e7; }
+
+    .chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--soft-blue);
+      font-weight: 700;
+    }
+
+    .search-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .search-button {
+      min-height: 49px;
+      flex: 1;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      border-radius: 11px;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 700;
+      transition: background .15s, transform .15s;
+    }
+
+    .search-button:hover { background: var(--accent-hover); }
+    .search-button:active { transform: translateY(1px); }
+
+    .search-hint {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .quick-section {
+      padding: 44px 0 14px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: -.035em;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+    }
+
+    .quick-card {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 91px;
+      padding: 17px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color .15s, transform .15s, box-shadow .15s;
+    }
+
+    .quick-card:hover {
+      border-color: #bfd1eb;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .quick-icon {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--accent);
+      background: var(--soft-blue);
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .quick-card strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .quick-card small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .results-section {
+      padding: 38px 0 65px;
+      scroll-margin-top: 20px;
+    }
+
+    .result-meta {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 17px;
+      padding: 12px 14px;
+      border: 1px solid #f0e2bd;
+      border-radius: 10px;
+      background: #fffaf0;
+      color: #785c20;
+      font-size: 12px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .result-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+    }
+
+    .result-visual {
+      min-height: 116px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(135deg, #e9f1fb, #f5f7fa);
+      color: #59799f;
+      font-size: 35px;
+    }
+
+    .sample-label {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,.85);
+      border-radius: 6px;
+      background: rgba(255,255,255,.9);
+      color: #586270;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .result-content { padding: 16px; }
+
+    .result-category {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .result-content h3 {
+      margin: 5px 0 7px;
+      font-size: 17px;
+      letter-spacing: -.025em;
+    }
+
+    .result-description {
+      min-height: 40px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .result-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 13px;
+    }
+
+    .detail-pill {
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f2f4f7;
+      color: #4f5865;
+      font-size: 11px;
+    }
+
+    .result-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #edf0f3;
+    }
+
+    .result-footer span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .map-link {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .map-link:hover { text-decoration: underline; }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 42px 20px;
+      text-align: center;
+      border: 1px dashed #cfd6df;
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .empty-state strong { display: block; margin-bottom: 7px; }
+    .empty-state p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .footer-inner {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 25px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer-inner a { color: inherit; text-decoration: none; }
+
+    @media (max-width: 800px) {
+      .field-grid { grid-template-columns: 1fr 1fr; }
+      .field:first-child { grid-column: 1 / -1; }
+      .quick-grid { grid-template-columns: repeat(2, 1fr); }
+      .results-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero { padding-top: 48px; }
+    }
+
+    @media (max-width: 540px) {
+      .site-header { height: 62px; padding: 0 18px; }
+      .brand { font-size: 20px; }
+      .header-note { font-size: 11px; }
+      main { width: calc(100% - 28px); }
+      .hero { padding: 39px 0 25px; }
+      h1 { font-size: 31px; }
+      .hero p { font-size: 13px; }
+      .search-panel { padding: 18px 15px; border-radius: 16px; }
+      .field-grid { grid-template-columns: 1fr; gap: 14px; }
+      .field:first-child { grid-column: auto; }
+      .filter-section { margin-top: 18px; padding-top: 17px; }
+      .chip { font-size: 12px; padding: 6px 11px; }
+      .search-actions { flex-direction: column; align-items: stretch; gap: 9px; }
+      .search-hint { text-align: center; }
+      .quick-section { padding-top: 35px; }
+      .section-heading h2 { font-size: 19px; }
+      .quick-grid { gap: 9px; }
+      .quick-card { min-height: 80px; gap: 9px; padding: 11px; }
+      .quick-icon { width: 35px; height: 35px; flex-basis: 35px; font-size: 16px; }
+      .quick-card strong { font-size: 12px; }
+      .quick-card small { font-size: 10px; }
+      .results-grid { grid-template-columns: 1fr; }
+      .result-visual { min-height: 100px; }
+      .footer-inner { width: calc(100% - 28px); flex-direction: column; gap: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="YORIMICHI トップページ">YORI<span>MICHI</span></a>
+    <div class="header-note">お出かけ先を、条件から。</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <span class="eyebrow">OUTING SEARCH</span>
+      <h1>次に行く場所、<br>条件から見つけよう。</h1>
+      <p>場所・予算・目的を入力するだけ。お出かけ先探しを、もっと手軽に。</p>
+    </section>
+
+    <section class="search-panel" aria-label="お出かけ先の検索">
+      <form id="searchForm">
+        <div class="field-grid">
+          <div class="field">
+            <label for="location">どこで探す？</label>
+            <div class="input-wrap">
+              <span class="pin" aria-hidden="true">⌖</span>
+              <input id="location" name="location" type="text" placeholder="例：羽田空港、名古屋駅" autocomplete="off">
+            </div>
+          </div>
+          <div class="field">
+            <label for="category">何を探す？</label>
+            <select id="category" name="category">
+              <option value="all">すべてのジャンル</option>
+              <option value="food">飲食店・カフェ</option>
+              <option value="shopping">買い物</option>
+              <option value="sightseeing">観光・遊び</option>
+              <option value="rest">休憩できる場所</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="budget">予算の上限</label>
+            <select id="budget" name="budget">
+              <option value="any">指定しない</option>
+              <option value="1000">1,000円以内</option>
+              <option value="2000">2,000円以内</option>
+              <option value="3000">3,000円以内</option>
+              <option value="5000">5,000円以内</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-top">
+            <span class="field-label">こだわり条件</span>
+            <button class="clear-button" type="button" id="clearFilters">条件をリセット</button>
+          </div>
+          <div class="chips" id="filterChips">
+            <button type="button" class="chip" data-filter="suica" aria-pressed="false">Suica対応</button>
+            <button type="button" class="chip" data-filter="open" aria-pressed="false">営業中</button>
+            <button type="button" class="chip" data-filter="free" aria-pressed="false">無料で楽しめる</button>
+            <button type="button" class="chip" data-filter="rain" aria-pressed="false">雨でもOK</button>
+            <button type="button" class="chip" data-filter="quiet" aria-pressed="false">静かに過ごせる</button>
+          </div>
+        </div>
+
+        <div class="search-actions">
+          <button class="search-button" type="submit">
+            <span aria-hidden="true">⌕</span>
+            条件に合う場所を探す
+          </button>
+          <span class="search-hint">試作版：検索結果はサンプルです</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="quick-section" aria-labelledby="quickTitle">
+      <div class="section-heading">
+        <div>
+          <h2 id="quickTitle">こんな条件で探す</h2>
+          <p>よくある目的から、検索条件をすばやく設定。</p>
+        </div>
+      </div>
+      <div class="quick-grid">
+        <button class="quick-card" type="button" data-preset="cheap">
+          <span class="quick-icon" aria-hidden="true">¥</span>
+          <span><strong>安く楽しみたい</strong><small>予算1,000円以内</small></span>
+        </button>
+        <button class="quick-card" type="button" data-preset="rain">
+          <span class="quick-icon" aria-hidden="true">☂</span>
+          <span><strong>雨の日のお出かけ</strong><small>屋内スポット中心</small></span>
+        </button>
+        <button class="quick-card" type="button" data-preset="suica">
+          <span class="quick-icon" aria-hidden="true">IC</span>
+          <span><strong>Suicaが使える</strong><small>決済条件で探す</small></span>
+        </button>
+        <button class="quick-card" type="button" data-preset="rest">
+          <span class="quick-icon" aria-hidden="true">☕</span>
+          <span><strong>ちょっと休憩</strong><small>カフェ・休憩スポット</small></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="results-section" id="results" aria-labelledby="resultsTitle" aria-live="polite">
+      <div class="section-heading">
+        <div>
+          <h2 id="resultsTitle">検索イメージ</h2>
+          <p id="resultsDescription">実際の店舗情報を接続する前のサンプル表示です。</p>
+        </div>
+        <span class="result-meta" id="resultCount">サンプル 3件</span>
+      </div>
+
+      <div class="notice">
+        <span aria-hidden="true">ⓘ</span>
+        <span>現在は動作確認用のサンプルデータです。店舗名・営業時間・決済対応など、実在する店舗の情報を示すものではありません。</span>
+      </div>
+
+      <div class="results-grid" id="resultsGrid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 YORIMICHI</span>
+      <span>お出かけ先探しを、もっと手軽に。</span>
+    </div>
+  </footer>
+
+  <script>
+    const samplePlaces = [
+      {
+        name: "サンプルカフェ A",
+        category: "food",
+        categoryLabel: "飲食店・カフェ",
+        description: "検索結果の表示例です。実店舗の情報ではありません。",
+        price: 900,
+        priceLabel: "予算目安 〜900円",
+        payment: false,
+        open: true,
+        free: false,
+        rain: true,
+        quiet: true,
+        icon: "☕",
+        tags: ["屋内", "休憩向け"]
+      },
+      {
+        name: "サンプルスポット B",
+        category: "sightseeing",
+        categoryLabel: "観光・遊び",
+        description: "カテゴリや条件で絞り込む動作を確認できます。",
+        price: 0,
+        priceLabel: "無料",
+        payment: false,
+        open: true,
+        free: true,
+        rain: false,
+        quiet: false,
+        icon: "⌂",
+        tags: ["無料", "散策"]
+      },
+      {
+        name: "サンプルショップ C",
+        category: "shopping",
+        categoryLabel: "買い物",
+        description: "実際のデータ接続後は店舗情報に置き換えます。",
+        price: 1800,
+        priceLabel: "予算目安 〜1,800円",
+        payment: true,
+        open: true,
+        free: false,
+        rain: true,
+        quiet: false,
+        icon: "▧",
+        tags: ["屋内", "買い物"]
+      }
+    ];
+
+    const activeFilters = new Set();
+    const form = document.getElementById("searchForm");
+    const locationInput = document.getElementById("location");
+    const categorySelect = document.getElementById("category");
+    const budgetSelect = document.getElementById("budget");
+    const resultsGrid = document.getElementById("resultsGrid");
+    const resultsTitle = document.getElementById("resultsTitle");
+    const resultsDescription = document.getElementById("resultsDescription");
+    const resultCount = document.getElementById("resultCount");
+
+    document.querySelectorAll("[data-filter]").forEach(button => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+        if (activeFilters.has(filter)) {
+          activeFilters.delete(filter);
+          button.classList.remove("active");
+          button.setAttribute("aria-pressed", "false");
+        } else {
+          activeFilters.add(filter);
+          button.classList.add("active");
+          button.setAttribute("aria-pressed", "true");
+        }
+      });
+    });
+
+    function getFilteredPlaces() {
+      const category = categorySelect.value;
+      const budget = budgetSelect.value === "any" ? Infinity : Number(budgetSelect.value);
+
+      return samplePlaces.filter(place => {
+        if (category !== "all" && place.category !== category && !(category === "rest" && place.quiet)) return false;
+        if (place.price > budget) return false;
+        if (activeFilters.has("suica") && !place.payment) return false;
+        if (activeFilters.has("open") && !place.open) return false;
+        if (activeFilters.has("free") && !place.free) return false;
+        if (activeFilters.has("rain") && !place.rain) return false;
+        if (activeFilters.has("quiet") && !place.quiet) return false;
+        return true;
+      });
+    }
+
+    function renderResults(places, isSearch) {
+      const location = locationInput.value.trim();
+      resultsTitle.textContent = isSearch ? "検索結果のイメージ" : "検索イメージ";
+      resultsDescription.textContent = location
+        ? `「${location}」を指定した検索画面のサンプルです。実際の場所検索は未接続です。`
+        : "条件に合わせて表示内容が変わるサンプルです。";
+      resultCount.textContent = `サンプル ${places.length}件`;
+
+      if (places.length === 0) {
+        resultsGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>条件に合うサンプルがありません</strong>
+            <p>条件を少しゆるめて、もう一度検索してみてください。</p>
+          </div>`;
+        return;
+      }
+
+      resultsGrid.innerHTML = places.map(place => `
+        <article class="result-card">
+          <div class="result-visual">
+            <span class="sample-label">サンプルデータ</span>
+            <span aria-hidden="true">${place.icon}</span>
+          </div>
+          <div class="result-content">
+            <span class="result-category">${place.categoryLabel}</span>
+            <h3>${place.name}</h3>
+            <p class="result-description">${place.description}</p>
+            <div class="result-details">
+              <span class="detail-pill">${place.priceLabel}</span>
+              ${place.payment ? '<span class="detail-pill">決済条件の例</span>' : ""}
+              ${place.rain ? '<span class="detail-pill">屋内の例</span>' : ""}
+              ${place.free ? '<span class="detail-pill">無料の例</span>' : ""}
+            </div>
+            <div class="result-footer">
+              <span>実在店舗の情報ではありません</span>
+              <a class="map-link" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">地図を見る ↗</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      renderResults(getFilteredPlaces(), true);
+      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("clearFilters").addEventListener("click", () => {
+      activeFilters.clear();
+      document.querySelectorAll("[data-filter]").forEach(button => {
+        button.classList.remove("active");
+        button.setAttribute("aria-pressed", "false");
+      });
+      categorySelect.value = "all";
+      budgetSelect.value = "any";
+      renderResults(samplePlaces, false);
+    });
+
+    document.querySelectorAll("[data-preset]").forEach(button => {
+      button.addEventListener("click", () => {
+        const preset = button.dataset.preset;
+        activeFilters.clear();
+        document.querySelectorAll("[data-filter]").forEach(chip => {
+          chip.classList.remove("active");
+          chip.setAttribute("aria-pressed", "false");
+        });
+        categorySelect.value = "all";
+        budgetSelect.value = "any";
+
+        if (preset === "cheap") {
+          budgetSelect.value = "1000";
+        } else if (preset === "rain") {
+          activeFilters.add("rain");
+        } else if (preset === "suica") {
+          activeFilters.add("suica");
+        } else if (preset === "rest") {
+          categorySelect.value = "rest";
+        }
+
+        activeFilters.forEach(filter => {
+          const chip = document.querySelector(`[data-filter="${filter}"]`);
+          if (chip) {
+            chip.classList.add("active");
+            chip.setAttribute("aria-pressed", "true");
+          }
+        });
+
+        renderResults(getFilteredPlaces(), true);
+        document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    renderResults(samplePlaces, false);
+  </script>
+</body>
+</html>
