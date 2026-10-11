@@ -19,227 +19,103 @@
       --radius: 16px;
       --shadow: 0 4px 24px rgba(0,0,0,0.08);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
     button, input, select { font: inherit; }
     button { cursor: pointer; border: none; background: none; }
 
-    /* 全体 */
     .app { height: 100%; position: relative; }
-
-    /* 地図 */
     #map { width: 100%; height: 100%; }
 
-    /* 浮遊検索バー */
     .search-float {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      right: 16px;
-      z-index: 1000;
-      max-width: 480px;
-      margin: 0 auto;
+      position: absolute; top: 16px; left: 16px; right: 16px; z-index: 1000;
+      max-width: 480px; margin: 0 auto;
     }
-
     .search-card {
-      background: var(--surface);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
     }
-
     .search-main {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
+      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
     }
-
     .search-main input {
-      flex: 1;
-      height: 40px;
-      border: none;
-      outline: none;
-      font-size: 15px;
-      background: transparent;
+      flex: 1; height: 40px; border: none; outline: none; font-size: 15px; background: transparent;
     }
     .search-main input::placeholder { color: #9ca3af; }
-
     .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      color: var(--muted);
-      font-size: 18px;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+      color: var(--muted); font-size: 18px; flex-shrink: 0;
     }
     .icon-btn:hover { background: var(--bg); color: var(--accent); }
-
     .search-btn {
-      height: 40px;
-      padding: 0 16px;
-      border-radius: 12px;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-      font-size: 14px;
-      flex-shrink: 0;
+      height: 40px; padding: 0 16px; border-radius: 12px; background: var(--accent);
+      color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0;
     }
     .search-btn:disabled { opacity: 0.6; }
 
-    /* 条件エリア（折りたたみ） */
-    .filters {
-      display: none;
-      padding: 0 14px 14px;
-      border-top: 1px solid var(--line);
-    }
+    .filters { display: none; padding: 0 14px 14px; border-top: 1px solid var(--line); }
     .filters.open { display: block; }
-
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
+    .filter-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
     select {
-      height: 36px;
-      padding: 0 10px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--bg);
-      font-size: 13px;
-      color: var(--text);
-      outline: none;
+      height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px;
+      background: var(--bg); font-size: 13px; color: var(--text); outline: none;
     }
-
     .chip {
-      height: 32px;
-      padding: 0 12px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      font-size: 12px;
-      color: var(--muted);
+      height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
+      background: var(--surface); font-size: 12px; color: var(--muted);
     }
     .chip.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
-      font-weight: 700;
+      background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700;
     }
-
     .toggle-filters {
-      width: 100%;
-      padding: 8px;
-      font-size: 12px;
-      color: var(--muted);
-      text-align: center;
+      width: 100%; padding: 8px; font-size: 12px; color: var(--muted); text-align: center;
       border-top: 1px solid var(--line);
     }
     .toggle-filters:hover { color: var(--accent); }
 
-    /* 結果ボトムシート */
     .sheet {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 900;
-      background: var(--surface);
-      border-radius: 20px 20px 0 0;
-      box-shadow: 0 -4px 30px rgba(0,0,0,0.1);
-      max-height: 45vh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(calc(100% - 56px));
-      transition: transform 0.3s ease;
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 900;
+      background: var(--surface); border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 30px rgba(0,0,0,0.1); max-height: 48vh;
+      display: flex; flex-direction: column;
+      transform: translateY(calc(100% - 56px)); transition: transform 0.3s ease;
     }
     .sheet.open { transform: translateY(0); }
-
     .sheet-handle {
-      width: 40px;
-      height: 4px;
-      background: #d1d5db;
-      border-radius: 2px;
-      margin: 10px auto 6px;
-      flex-shrink: 0;
+      width: 40px; height: 4px; background: #d1d5db; border-radius: 2px;
+      margin: 10px auto 6px; flex-shrink: 0;
     }
-
     .sheet-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 18px 12px;
-      font-size: 14px;
-      flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 18px 12px; font-size: 14px; flex-shrink: 0;
     }
     .sheet-header strong { font-weight: 700; }
-    .sheet-header span { color: var(--muted); font-size: 13px; }
-
     .sheet-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 12px 20px;
-      -webkit-overflow-scrolling: touch;
+      flex: 1; overflow-y: auto; padding: 0 12px 20px; -webkit-overflow-scrolling: touch;
     }
-
     .item {
-      display: flex;
-      gap: 12px;
-      padding: 12px;
-      border-radius: 14px;
-      cursor: pointer;
+      display: flex; gap: 12px; padding: 12px; border-radius: 14px; cursor: pointer;
       transition: background 0.15s;
     }
     .item:hover, .item.active { background: var(--bg); }
-
     .item-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: var(--accent-soft);
-      display: grid;
-      place-items: center;
-      font-size: 20px;
-      flex-shrink: 0;
+      width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft);
+      display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
     }
-
     .item-body { flex: 1; min-width: 0; }
     .item-cat { font-size: 11px; color: var(--accent); font-weight: 700; }
     .item-name { font-size: 15px; font-weight: 700; margin: 2px 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; }
+    .item-meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
-    .empty {
-      padding: 30px 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .empty { padding: 30px 20px; text-align: center; color: var(--muted); font-size: 13px; }
 
-    /* マーカー */
     .marker-pin {
-      width: 36px;
-      height: 36px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      width: 36px; height: 36px; background: var(--accent); color: #fff;
+      border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
-    .marker-pin span {
-      transform: rotate(45deg);
-      font-size: 14px;
-    }
+    .marker-pin span { transform: rotate(45deg); font-size: 14px; }
 
-    /* Leaflet調整 */
     .leaflet-control-zoom { border: none !important; box-shadow: var(--shadow) !important; border-radius: 12px !important; overflow: hidden; }
     .leaflet-control-zoom a { width: 36px !important; height: 36px !important; line-height: 36px !important; color: var(--text) !important; }
     .leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: var(--shadow); }
@@ -247,100 +123,84 @@
     .leaflet-popup-content strong { display: block; font-size: 15px; margin-bottom: 2px; }
 
     .notice {
-      position: absolute;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,255,255,0.95);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 11px;
-      color: var(--muted);
-      z-index: 800;
-      box-shadow: var(--shadow);
-      pointer-events: none;
+      position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+      background: rgba(255,255,255,0.95); padding: 6px 12px; border-radius: 8px;
+      font-size: 11px; color: var(--muted); z-index: 800; box-shadow: var(--shadow);
+      pointer-events: none; white-space: nowrap;
+    }
+    .attribution {
+      position: absolute; bottom: 60px; left: 8px; z-index: 500;
+      font-size: 10px; color: #666; background: rgba(255,255,255,0.85);
+      padding: 3px 6px; border-radius: 4px; max-width: 220px; line-height: 1.3;
     }
 
     @media (min-width: 768px) {
       .search-float { left: 24px; right: auto; width: 400px; }
-      .sheet { left: 24px; right: auto; width: 400px; max-height: 50vh; border-radius: 18px; bottom: 24px; transform: translateY(0); }
+      .sheet { left: 24px; right: auto; width: 400px; max-height: 55vh; border-radius: 18px; bottom: 24px; transform: translateY(0); }
       .sheet-handle { display: none; }
+      .attribution { bottom: 12px; }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div id="map"></div>
-    <div class="notice">サンプルデータです（実店舗ではありません）</div>
+    <div class="notice">実在施設データ（OpenPOI）を使用中</div>
+    <div class="attribution">データ: OpenPOI API（Overture Maps / Japan Food Facilities）</div>
 
-    <!-- 浮遊検索 -->
     <div class="search-float">
       <div class="search-card">
         <div class="search-main">
           <button class="icon-btn" id="locBtn" title="現在地">📍</button>
-          <input id="location" type="text" placeholder="駅名・地名で探す（例：渋谷）" autocomplete="off">
+          <input id="location" type="text" placeholder="駅名・地名（例：渋谷）" autocomplete="off">
           <button class="search-btn" id="searchBtn">探す</button>
         </div>
-
         <div class="filters" id="filters">
           <div class="filter-row">
             <select id="category">
               <option value="all">ジャンル：すべて</option>
-              <option value="food">飲食・カフェ</option>
+              <option value="cafe">カフェ</option>
+              <option value="restaurant">飲食店</option>
               <option value="shopping">買い物</option>
               <option value="sightseeing">観光・遊び</option>
-              <option value="rest">休憩</option>
-            </select>
-            <select id="budget">
-              <option value="any">予算：指定なし</option>
-              <option value="1000">1,000円以内</option>
-              <option value="2000">2,000円以内</option>
-              <option value="3000">3,000円以内</option>
-              <option value="5000">5,000円以内</option>
+              <option value="park">公園・休憩</option>
             </select>
           </div>
-          <div class="filter-row" id="chips">
-            <button class="chip" data-filter="suica">Suica</button>
-            <button class="chip" data-filter="open">営業中</button>
-            <button class="chip" data-filter="free">無料</button>
-            <button class="chip" data-filter="rain">雨OK</button>
-            <button class="chip" data-filter="quiet">静か</button>
+          <div class="filter-row" style="font-size:11px;color:var(--muted);">
+            ※予算・Suica・営業中などの詳細条件はデータに無いため非対応
           </div>
         </div>
-
         <button class="toggle-filters" id="toggleFilters">条件を指定する ▾</button>
       </div>
     </div>
 
-    <!-- 結果シート -->
     <div class="sheet" id="sheet">
       <div class="sheet-handle"></div>
       <div class="sheet-header">
-        <strong id="countText">条件を入れて探してください</strong>
+        <strong id="countText">場所を入れて探してください</strong>
         <span id="clearBtn" style="cursor:pointer;color:var(--muted);font-size:13px;">クリア</span>
       </div>
       <div class="sheet-list" id="list">
-        <div class="empty">場所や条件を入れて「探す」を押してください</div>
+        <div class="empty">駅名や地名を入れて「探す」を押してください</div>
       </div>
     </div>
   </div>
 
   <script>
-    const places = [
-      { id:1, name:"サンプルカフェ A", category:"food", cat:"飲食・カフェ", desc:"静かに過ごせるカフェ例", price:900, priceLabel:"〜900円", payment:true, open:true, free:false, rain:true, quiet:true, icon:"☕", lat:35.6595, lng:139.7005 },
-      { id:2, name:"サンプルスポット B", category:"sightseeing", cat:"観光・遊び", desc:"無料で楽しめる屋外例", price:0, priceLabel:"無料", payment:false, open:true, free:true, rain:false, quiet:false, icon:"⌂", lat:35.6586, lng:139.7454 },
-      { id:3, name:"サンプルショップ C", category:"shopping", cat:"買い物", desc:"Suica対応ショップ例", price:1800, priceLabel:"〜1,800円", payment:true, open:true, free:false, rain:true, quiet:false, icon:"▧", lat:35.6812, lng:139.7671 },
-      { id:4, name:"サンプル休憩所 D", category:"rest", cat:"休憩", desc:"静かに休める場所例", price:500, priceLabel:"〜500円", payment:true, open:true, free:false, rain:true, quiet:true, icon:"🪑", lat:35.7101, lng:139.8107 },
-      { id:5, name:"サンプル屋外 E", category:"sightseeing", cat:"観光・遊び", desc:"雨の日は向かない例", price:0, priceLabel:"無料", payment:false, open:true, free:true, rain:false, quiet:true, icon:"🌳", lat:35.6895, lng:139.6917 },
-      { id:6, name:"サンプル食堂 F", category:"food", cat:"飲食・カフェ", desc:"予算抑えめ食堂例", price:1200, priceLabel:"〜1,200円", payment:false, open:false, free:false, rain:true, quiet:false, icon:"🍜", lat:35.6262, lng:139.7400 },
-      { id:7, name:"サンプルバー G", category:"food", cat:"飲食・カフェ", desc:"夜も営業の例", price:2500, priceLabel:"〜2,500円", payment:true, open:true, free:false, rain:true, quiet:false, icon:"🍸", lat:35.6641, lng:139.6982 },
-      { id:8, name:"サンプル公園 H", category:"sightseeing", cat:"観光・遊び", desc:"無料の公園例", price:0, priceLabel:"無料", payment:false, open:true, free:true, rain:false, quiet:true, icon:"🏞️", lat:35.6762, lng:139.6503 }
-    ];
+    // カテゴリ → 検索キーワード / アイコン
+    const CATEGORY_MAP = {
+      all: { q: "", icon: "📍" },
+      cafe: { q: "カフェ", icon: "☕" },
+      restaurant: { q: "レストラン 食堂 居酒屋", icon: "🍜" },
+      shopping: { q: "ショップ 商店 デパート", icon: "🛍️" },
+      sightseeing: { q: "観光 博物館 寺 神社", icon: "🏯" },
+      park: { q: "公園 広場", icon: "🌳" }
+    };
 
-    const activeFilters = new Set();
     let lastCenter = null;
     let markers = [];
     let activeId = null;
+    let currentResults = [];
 
     // 地図
     const map = L.map("map", { zoomControl: false }).setView([35.6812, 139.7671], 12);
@@ -350,10 +210,8 @@
     }).addTo(map);
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
-    // 要素
     const locationInput = document.getElementById("location");
     const categorySelect = document.getElementById("category");
-    const budgetSelect = document.getElementById("budget");
     const searchBtn = document.getElementById("searchBtn");
     const listEl = document.getElementById("list");
     const countText = document.getElementById("countText");
@@ -361,61 +219,53 @@
     const filters = document.getElementById("filters");
     const toggleBtn = document.getElementById("toggleFilters");
 
-    // 条件トグル
     toggleBtn.addEventListener("click", () => {
       filters.classList.toggle("open");
       toggleBtn.textContent = filters.classList.contains("open") ? "条件を閉じる ▴" : "条件を指定する ▾";
     });
 
-    // チップ
-    document.querySelectorAll(".chip").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const f = btn.dataset.filter;
-        if (activeFilters.has(f)) {
-          activeFilters.delete(f);
-          btn.classList.remove("active");
-        } else {
-          activeFilters.add(f);
-          btn.classList.add("active");
-        }
-      });
-    });
-
-    // ジオコード
+    // ジオコーディング
     async function geocode(q) {
       if (!q.trim()) return null;
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=jp`, {
-        headers: { "User-Agent": "YORIMICHI/1.0" }
-      });
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=jp`,
+        { headers: { "User-Agent": "YORIMICHI/1.0" } }
+      );
       const data = await res.json();
       if (!data.length) return null;
       return { lat: +data[0].lat, lng: +data[0].lon };
     }
 
-    function dist(lat1, lng1, lat2, lng2) {
-      const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
-      const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    function filterPlaces(center) {
-      const cat = categorySelect.value;
-      const budget = budgetSelect.value === "any" ? Infinity : +budgetSelect.value;
-      let list = places.filter(p => {
-        if (cat !== "all" && p.category !== cat && !(cat === "rest" && p.quiet)) return false;
-        if (p.price > budget) return false;
-        if (activeFilters.has("suica") && !p.payment) return false;
-        if (activeFilters.has("open") && !p.open) return false;
-        if (activeFilters.has("free") && !p.free) return false;
-        if (activeFilters.has("rain") && !p.rain) return false;
-        if (activeFilters.has("quiet") && !p.quiet) return false;
-        return true;
+    // OpenPOI 検索
+    async function searchOpenPOI(center, categoryKey) {
+      const cat = CATEGORY_MAP[categoryKey] || CATEGORY_MAP.all;
+      const params = new URLSearchParams({
+        limit: 30
       });
+      if (cat.q) params.set("q", cat.q);
       if (center) {
-        list = list.map(p => ({ ...p, distance: dist(center.lat, center.lng, p.lat, p.lng) }))
-                   .sort((a,b) => a.distance - b.distance);
+        params.set("center", `${center.lng},${center.lat}`); // lng,lat の順
+        params.set("radius", 1500); // 1.5km
+      } else if (!cat.q) {
+        // 位置もキーワードも無い場合は東京駅周辺をデフォルト
+        params.set("center", "139.7671,35.6812");
+        params.set("radius", 1000);
+        params.set("q", "カフェ");
       }
-      return list;
+
+      const res = await fetch(`https://api.openpoiapi.com/v1/search?${params}`);
+      if (!res.ok) throw new Error("検索APIエラー");
+      const json = await res.json();
+      return (json.results || []).map((r, i) => ({
+        id: i + 1,
+        name: r.name || "名称不明",
+        address: r.address || `${r.prefecture || ""}${r.city || ""}`,
+        category: r.category || r.business_type || "",
+        lat: r.lat,
+        lng: r.lng,
+        icon: cat.icon,
+        source: r.source || ""
+      }));
     }
 
     function clearMarkers() {
@@ -425,8 +275,10 @@
 
     function showMarkers(list) {
       clearMarkers();
+      if (!list.length) return;
       const bounds = [];
       list.forEach(p => {
+        if (!p.lat || !p.lng) return;
         const icon = L.divIcon({
           className: "",
           html: `<div class="marker-pin"><span>${p.icon}</span></div>`,
@@ -435,34 +287,37 @@
           popupAnchor: [0, -36]
         });
         const m = L.marker([p.lat, p.lng], { icon }).addTo(map)
-          .bindPopup(`<strong>${p.name}</strong><div style="color:#2563eb;font-size:11px;font-weight:700">${p.cat}</div><div style="color:#6b7280;margin-top:4px;font-size:12px">${p.desc}<br>${p.priceLabel}${p.distance!=null?` · 約${p.distance.toFixed(1)}km`:""}</div>`);
-        m.on("click", () => { activeId = p.id; renderList(list); });
+          .bindPopup(`
+            <strong>${p.name}</strong>
+            <div style="color:#6b7280;margin-top:4px;font-size:12px;">${p.address || ""}</div>
+            <div style="margin-top:6px;font-size:11px;color:#9ca3af;">${p.category}</div>
+          `);
+        m.on("click", () => {
+          activeId = p.id;
+          renderList(list);
+        });
         markers.push(m);
         bounds.push([p.lat, p.lng]);
       });
-      if (bounds.length) map.fitBounds(bounds, { padding: [80, 80], maxZoom: 14 });
+      if (bounds.length) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
     }
 
     function renderList(list) {
+      currentResults = list;
       if (!list.length) {
-        listEl.innerHTML = `<div class="empty">条件に合う場所がありません<br>条件をゆるめて再検索してください</div>`;
+        listEl.innerHTML = `<div class="empty">条件に合う施設が見つかりませんでした<br>場所やジャンルを変えて再検索してください</div>`;
         countText.textContent = "0件";
         sheet.classList.add("open");
         return;
       }
       countText.innerHTML = `<strong>${list.length}件</strong> 見つかりました`;
       listEl.innerHTML = list.map(p => `
-        <div class="item ${activeId===p.id?"active":""}" data-id="${p.id}">
+        <div class="item ${activeId === p.id ? "active" : ""}" data-id="${p.id}">
           <div class="item-icon">${p.icon}</div>
           <div class="item-body">
-            <div class="item-cat">${p.cat}</div>
+            <div class="item-cat">${p.category || "施設"}</div>
             <div class="item-name">${p.name}</div>
-            <div class="item-meta">
-              <span>${p.priceLabel}</span>
-              ${p.distance!=null?`<span>約${p.distance.toFixed(1)}km</span>`:""}
-              ${p.payment?"<span>Suica</span>":""}
-              ${!p.open?"<span>休業中</span>":""}
-            </div>
+            <div class="item-meta">${p.address || ""}</div>
           </div>
         </div>
       `).join("");
@@ -474,7 +329,7 @@
           if (!p) return;
           activeId = id;
           renderList(list);
-          map.setView([p.lat, p.lng], 15);
+          map.setView([p.lat, p.lng], 16);
           const m = markers.find(mk => {
             const ll = mk.getLatLng();
             return Math.abs(ll.lat - p.lat) < 0.0001;
@@ -489,20 +344,28 @@
       searchBtn.disabled = true;
       searchBtn.textContent = "…";
       activeId = null;
+      listEl.innerHTML = `<div class="empty">検索中…</div>`;
+      sheet.classList.add("open");
+
       const q = locationInput.value.trim();
+      const categoryKey = categorySelect.value;
       let center = null;
+
       try {
         if (q && q !== "現在地") {
           center = await geocode(q);
+          if (!center) throw new Error("場所が見つかりませんでした");
           lastCenter = center;
         } else if (lastCenter && q === "現在地") {
           center = lastCenter;
         }
-        const list = filterPlaces(center);
+
+        const list = await searchOpenPOI(center, categoryKey);
         showMarkers(list);
         renderList(list);
       } catch (e) {
-        listEl.innerHTML = `<div class="empty">検索に失敗しました<br>${e.message||""}</div>`;
+        console.error(e);
+        listEl.innerHTML = `<div class="empty">検索に失敗しました<br>${e.message || ""}</div>`;
         countText.textContent = "エラー";
         clearMarkers();
       } finally {
@@ -533,21 +396,16 @@
     });
 
     document.getElementById("clearBtn").addEventListener("click", () => {
-      activeFilters.clear();
-      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-      categorySelect.value = "all";
-      budgetSelect.value = "any";
       locationInput.value = "";
+      categorySelect.value = "all";
       lastCenter = null;
       activeId = null;
       clearMarkers();
-      listEl.innerHTML = `<div class="empty">場所や条件を入れて「探す」を押してください</div>`;
-      countText.textContent = "条件を入れて探してください";
+      listEl.innerHTML = `<div class="empty">駅名や地名を入れて「探す」を押してください</div>`;
+      countText.textContent = "場所を入れて探してください";
       sheet.classList.remove("open");
       map.setView([35.6812, 139.7671], 12);
     });
-
-    // 初期は何も出さない（空の状態）
   </script>
 </body>
 </html>
