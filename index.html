@@ -4,268 +4,244 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#ffffff">
-  <title>YORIMICHI | すぐ探せるお出かけマップ</title>
+  <title>YORIMICHI</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root {
-      --bg: #f4f6f9;
-      --surface: #ffffff;
-      --text: #1a1d23;
+      --bg: #f8f9fb;
+      --surface: #fff;
+      --text: #111;
       --muted: #6b7280;
       --line: #e5e7eb;
       --accent: #2563eb;
-      --accent-soft: #eff6ff;
-      --radius: 16px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --soft: #eff6ff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; border: none; background: none; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+    button, input, select { font: inherit; border: none; background: none; outline: none; }
+    button { cursor: pointer; }
 
     .app { height: 100%; position: relative; }
     #map { width: 100%; height: 100%; }
 
-    .search-float {
-      position: absolute; top: 16px; left: 16px; right: 16px; z-index: 1000;
-      max-width: 480px; margin: 0 auto;
+    /* 検索バー */
+    .bar {
+      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1000;
+      max-width: 420px; margin: 0 auto;
+      background: var(--surface); border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden;
     }
-    .search-card {
-      background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden;
+    .bar-row {
+      display: flex; align-items: center; gap: 6px; padding: 8px 10px;
     }
-    .search-main {
-      display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+    .bar-row input {
+      flex: 1; height: 38px; font-size: 15px; background: transparent;
     }
-    .search-main input {
-      flex: 1; height: 40px; border: none; outline: none; font-size: 15px; background: transparent;
+    .bar-row input::placeholder { color: #9ca3af; }
+    .btn-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: grid; place-items: center; color: var(--muted); font-size: 17px;
     }
-    .search-main input::placeholder { color: #9ca3af; }
-    .icon-btn {
-      width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
-      color: var(--muted); font-size: 18px; flex-shrink: 0;
+    .btn-icon:active { background: var(--bg); }
+    .btn-search {
+      height: 38px; padding: 0 14px; border-radius: 10px;
+      background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
     }
-    .icon-btn:hover { background: var(--bg); color: var(--accent); }
-    .search-btn {
-      height: 40px; padding: 0 16px; border-radius: 12px; background: var(--accent);
-      color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0;
-    }
-    .search-btn:disabled { opacity: 0.6; }
+    .btn-search:disabled { opacity: .5; }
 
-    .filters { display: none; padding: 0 14px 14px; border-top: 1px solid var(--line); }
-    .filters.open { display: block; }
-    .filter-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-    select {
-      height: 36px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px;
-      background: var(--bg); font-size: 13px; color: var(--text); outline: none;
+    .cats {
+      display: flex; gap: 6px; padding: 0 10px 10px; overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
-    .chip {
-      height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line);
-      background: var(--surface); font-size: 12px; color: var(--muted);
+    .cat {
+      flex-shrink: 0; height: 32px; padding: 0 12px; border-radius: 999px;
+      border: 1px solid var(--line); font-size: 13px; color: var(--muted);
+      background: var(--surface);
     }
-    .chip.active {
-      background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700;
+    .cat.active {
+      background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 700;
     }
-    .toggle-filters {
-      width: 100%; padding: 8px; font-size: 12px; color: var(--muted); text-align: center;
-      border-top: 1px solid var(--line);
-    }
-    .toggle-filters:hover { color: var(--accent); }
 
+    /* 結果シート */
     .sheet {
-      position: absolute; bottom: 0; left: 0; right: 0; z-index: 900;
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 900;
       background: var(--surface); border-radius: 20px 20px 0 0;
-      box-shadow: 0 -4px 30px rgba(0,0,0,0.1); max-height: 48vh;
-      display: flex; flex-direction: column;
-      transform: translateY(calc(100% - 56px)); transition: transform 0.3s ease;
+      box-shadow: 0 -6px 30px rgba(0,0,0,.08);
+      max-height: 46vh; display: flex; flex-direction: column;
+      transform: translateY(calc(100% - 52px));
+      transition: transform .25s ease;
     }
     .sheet.open { transform: translateY(0); }
-    .sheet-handle {
-      width: 40px; height: 4px; background: #d1d5db; border-radius: 2px;
-      margin: 10px auto 6px; flex-shrink: 0;
+    .handle {
+      width: 36px; height: 4px; background: #d1d5db; border-radius: 2px;
+      margin: 10px auto 4px;
     }
-    .sheet-header {
+    .sheet-head {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 4px 18px 12px; font-size: 14px; flex-shrink: 0;
+      padding: 4px 16px 10px; font-size: 14px;
     }
-    .sheet-header strong { font-weight: 700; }
-    .sheet-list {
-      flex: 1; overflow-y: auto; padding: 0 12px 20px; -webkit-overflow-scrolling: touch;
+    .sheet-head b { font-weight: 700; }
+    .sheet-head span { color: var(--muted); font-size: 13px; cursor: pointer; }
+    .list {
+      flex: 1; overflow-y: auto; padding: 0 10px 24px;
+      -webkit-overflow-scrolling: touch;
     }
-    .item {
-      display: flex; gap: 12px; padding: 12px; border-radius: 14px; cursor: pointer;
-      transition: background 0.15s;
+    .card {
+      display: flex; gap: 12px; padding: 12px; border-radius: 14px;
+      cursor: pointer; transition: background .12s;
     }
-    .item:hover, .item.active { background: var(--bg); }
-    .item-icon {
-      width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft);
-      display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
+    .card:active, .card.on { background: var(--bg); }
+    .card-icon {
+      width: 42px; height: 42px; border-radius: 12px; background: var(--soft);
+      display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
     }
-    .item-body { flex: 1; min-width: 0; }
-    .item-cat { font-size: 11px; color: var(--accent); font-weight: 700; }
-    .item-name { font-size: 15px; font-weight: 700; margin: 2px 0 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .card-body { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 15px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .card-addr {
+      font-size: 12px; color: var(--muted); margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .empty {
+      padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6;
+    }
 
-    .empty { padding: 30px 20px; text-align: center; color: var(--muted); font-size: 13px; }
-
-    .marker-pin {
-      width: 36px; height: 36px; background: var(--accent); color: #fff;
+    /* マーカー */
+    .pin {
+      width: 34px; height: 34px; background: var(--accent); color: #fff;
       border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
       display: flex; align-items: center; justify-content: center;
-      border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3);
     }
-    .marker-pin span { transform: rotate(45deg); font-size: 14px; }
+    .pin span { transform: rotate(45deg); font-size: 13px; }
 
-    .leaflet-control-zoom { border: none !important; box-shadow: var(--shadow) !important; border-radius: 12px !important; overflow: hidden; }
-    .leaflet-control-zoom a { width: 36px !important; height: 36px !important; line-height: 36px !important; color: var(--text) !important; }
-    .leaflet-popup-content-wrapper { border-radius: 14px; box-shadow: var(--shadow); }
-    .leaflet-popup-content { margin: 12px 14px; font-size: 13px; }
-    .leaflet-popup-content strong { display: block; font-size: 15px; margin-bottom: 2px; }
-
-    .notice {
-      position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
-      background: rgba(255,255,255,0.95); padding: 6px 12px; border-radius: 8px;
-      font-size: 11px; color: var(--muted); z-index: 800; box-shadow: var(--shadow);
-      pointer-events: none; white-space: nowrap;
+    .leaflet-control-zoom {
+      border: none !important; border-radius: 10px !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12) !important; overflow: hidden;
     }
-    .attribution {
-      position: absolute; bottom: 60px; left: 8px; z-index: 500;
-      font-size: 10px; color: #666; background: rgba(255,255,255,0.85);
-      padding: 3px 6px; border-radius: 4px; max-width: 220px; line-height: 1.3;
+    .leaflet-control-zoom a {
+      width: 34px !important; height: 34px !important; line-height: 34px !important;
+      color: var(--text) !important;
+    }
+    .leaflet-popup-content-wrapper { border-radius: 12px; }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 13px; }
+    .leaflet-popup-content b { display: block; font-size: 14px; margin-bottom: 2px; }
+
+    .src {
+      position: absolute; bottom: 56px; left: 8px; z-index: 400;
+      font-size: 10px; color: #666; background: rgba(255,255,255,.9);
+      padding: 2px 6px; border-radius: 4px;
     }
 
-    @media (min-width: 768px) {
-      .search-float { left: 24px; right: auto; width: 400px; }
-      .sheet { left: 24px; right: auto; width: 400px; max-height: 55vh; border-radius: 18px; bottom: 24px; transform: translateY(0); }
-      .sheet-handle { display: none; }
-      .attribution { bottom: 12px; }
+    @media (min-width: 720px) {
+      .bar { left: 20px; right: auto; width: 380px; }
+      .sheet {
+        left: 20px; right: auto; width: 380px; bottom: 20px;
+        max-height: 52vh; border-radius: 16px; transform: none;
+      }
+      .handle { display: none; }
+      .src { bottom: 12px; }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div id="map"></div>
-    <div class="notice">実在施設データ（OpenPOI）を使用中</div>
-    <div class="attribution">データ: OpenPOI API（Overture Maps / Japan Food Facilities）</div>
+    <div class="src">OpenPOI / Overture Maps / 食品営業許可オープンデータ</div>
 
-    <div class="search-float">
-      <div class="search-card">
-        <div class="search-main">
-          <button class="icon-btn" id="locBtn" title="現在地">📍</button>
-          <input id="location" type="text" placeholder="駅名・地名（例：渋谷）" autocomplete="off">
-          <button class="search-btn" id="searchBtn">探す</button>
-        </div>
-        <div class="filters" id="filters">
-          <div class="filter-row">
-            <select id="category">
-              <option value="all">ジャンル：すべて</option>
-              <option value="cafe">カフェ</option>
-              <option value="restaurant">飲食店</option>
-              <option value="shopping">買い物</option>
-              <option value="sightseeing">観光・遊び</option>
-              <option value="park">公園・休憩</option>
-            </select>
-          </div>
-          <div class="filter-row" style="font-size:11px;color:var(--muted);">
-            ※予算・Suica・営業中などの詳細条件はデータに無いため非対応
-          </div>
-        </div>
-        <button class="toggle-filters" id="toggleFilters">条件を指定する ▾</button>
+    <div class="bar">
+      <div class="bar-row">
+        <button class="btn-icon" id="locBtn" title="現在地">📍</button>
+        <input id="q" type="text" placeholder="駅・地名（例：渋谷）" autocomplete="off">
+        <button class="btn-search" id="go">探す</button>
+      </div>
+      <div class="cats" id="cats">
+        <button class="cat active" data-q="カフェ">カフェ</button>
+        <button class="cat" data-q="レストラン 食堂">飲食</button>
+        <button class="cat" data-q="コンビニ">コンビニ</button>
+        <button class="cat" data-q="公園">公園</button>
+        <button class="cat" data-q="書店 本屋">本屋</button>
+        <button class="cat" data-q="">なんでも</button>
       </div>
     </div>
 
     <div class="sheet" id="sheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-header">
-        <strong id="countText">場所を入れて探してください</strong>
-        <span id="clearBtn" style="cursor:pointer;color:var(--muted);font-size:13px;">クリア</span>
+      <div class="handle"></div>
+      <div class="sheet-head">
+        <b id="count">場所を入れて探してください</b>
+        <span id="clear">クリア</span>
       </div>
-      <div class="sheet-list" id="list">
+      <div class="list" id="list">
         <div class="empty">駅名や地名を入れて「探す」を押してください</div>
       </div>
     </div>
   </div>
 
   <script>
-    // カテゴリ → 検索キーワード / アイコン
-    const CATEGORY_MAP = {
-      all: { q: "", icon: "📍" },
-      cafe: { q: "カフェ", icon: "☕" },
-      restaurant: { q: "レストラン 食堂 居酒屋", icon: "🍜" },
-      shopping: { q: "ショップ 商店 デパート", icon: "🛍️" },
-      sightseeing: { q: "観光 博物館 寺 神社", icon: "🏯" },
-      park: { q: "公園 広場", icon: "🌳" }
-    };
-
-    let lastCenter = null;
+    let center = null;
     let markers = [];
-    let activeId = null;
-    let currentResults = [];
+    let active = null;
+    let currentCat = "カフェ";
 
-    // 地図
-    const map = L.map("map", { zoomControl: false }).setView([35.6812, 139.7671], 12);
+    const map = L.map("map", { zoomControl: false }).setView([35.6812, 139.7671], 13);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-      maxZoom: 19
+      maxZoom: 19, attribution: "© OSM"
     }).addTo(map);
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
-    const locationInput = document.getElementById("location");
-    const categorySelect = document.getElementById("category");
-    const searchBtn = document.getElementById("searchBtn");
-    const listEl = document.getElementById("list");
-    const countText = document.getElementById("countText");
-    const sheet = document.getElementById("sheet");
-    const filters = document.getElementById("filters");
-    const toggleBtn = document.getElementById("toggleFilters");
+    const $q = document.getElementById("q");
+    const $go = document.getElementById("go");
+    const $list = document.getElementById("list");
+    const $count = document.getElementById("count");
+    const $sheet = document.getElementById("sheet");
 
-    toggleBtn.addEventListener("click", () => {
-      filters.classList.toggle("open");
-      toggleBtn.textContent = filters.classList.contains("open") ? "条件を閉じる ▴" : "条件を指定する ▾";
+    // カテゴリ選択
+    document.querySelectorAll(".cat").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCat = btn.dataset.q;
+      });
     });
 
-    // ジオコーディング
-    async function geocode(q) {
-      if (!q.trim()) return null;
+    async function geocode(text) {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=jp`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(text)}&format=json&limit=1&countrycodes=jp`,
         { headers: { "User-Agent": "YORIMICHI/1.0" } }
       );
       const data = await res.json();
-      if (!data.length) return null;
+      if (!data[0]) return null;
       return { lat: +data[0].lat, lng: +data[0].lon };
     }
 
-    // OpenPOI 検索
-    async function searchOpenPOI(center, categoryKey) {
-      const cat = CATEGORY_MAP[categoryKey] || CATEGORY_MAP.all;
-      const params = new URLSearchParams({
-        limit: 30
-      });
-      if (cat.q) params.set("q", cat.q);
-      if (center) {
-        params.set("center", `${center.lng},${center.lat}`); // lng,lat の順
-        params.set("radius", 1500); // 1.5km
-      } else if (!cat.q) {
-        // 位置もキーワードも無い場合は東京駅周辺をデフォルト
-        params.set("center", "139.7671,35.6812");
-        params.set("radius", 1000);
-        params.set("q", "カフェ");
+    async function fetchPOI(c, keyword) {
+      const p = new URLSearchParams({ limit: 25 });
+      if (keyword) p.set("q", keyword);
+      if (c) {
+        p.set("center", `${c.lng},${c.lat}`);
+        p.set("radius", 1200);
+      } else {
+        // 位置指定なしの場合は東京駅周辺
+        p.set("center", "139.7671,35.6812");
+        p.set("radius", 800);
+        if (!keyword) p.set("q", "カフェ");
       }
-
-      const res = await fetch(`https://api.openpoiapi.com/v1/search?${params}`);
-      if (!res.ok) throw new Error("検索APIエラー");
+      const res = await fetch(`https://api.openpoiapi.com/v1/search?${p}`);
+      if (!res.ok) throw new Error("APIエラー");
       const json = await res.json();
-      return (json.results || []).map((r, i) => ({
-        id: i + 1,
-        name: r.name || "名称不明",
-        address: r.address || `${r.prefecture || ""}${r.city || ""}`,
-        category: r.category || r.business_type || "",
-        lat: r.lat,
-        lng: r.lng,
-        icon: cat.icon,
-        source: r.source || ""
-      }));
+      return (json.results || [])
+        .filter(r => r.lat && r.lng && r.name)
+        .map((r, i) => ({
+          id: i,
+          name: r.name.replace(/^１Ｆ\s*|^1F\s*/i, "").trim(),
+          addr: r.address || [r.prefecture, r.city].filter(Boolean).join(""),
+          lat: r.lat,
+          lng: r.lng,
+          cat: r.category || r.business_type || ""
+        }));
     }
 
     function clearMarkers() {
@@ -273,139 +249,129 @@
       markers = [];
     }
 
-    function showMarkers(list) {
+    function putMarkers(items) {
       clearMarkers();
-      if (!list.length) return;
+      if (!items.length) return;
       const bounds = [];
-      list.forEach(p => {
-        if (!p.lat || !p.lng) return;
+      items.forEach(p => {
         const icon = L.divIcon({
           className: "",
-          html: `<div class="marker-pin"><span>${p.icon}</span></div>`,
-          iconSize: [36, 36],
-          iconAnchor: [18, 36],
-          popupAnchor: [0, -36]
+          html: `<div class="pin"><span>📍</span></div>`,
+          iconSize: [34, 34],
+          iconAnchor: [17, 34],
+          popupAnchor: [0, -34]
         });
-        const m = L.marker([p.lat, p.lng], { icon }).addTo(map)
-          .bindPopup(`
-            <strong>${p.name}</strong>
-            <div style="color:#6b7280;margin-top:4px;font-size:12px;">${p.address || ""}</div>
-            <div style="margin-top:6px;font-size:11px;color:#9ca3af;">${p.category}</div>
-          `);
+        const m = L.marker([p.lat, p.lng], { icon })
+          .addTo(map)
+          .bindPopup(`<b>${p.name}</b><div style="color:#6b7280;font-size:12px;margin-top:3px">${p.addr || ""}</div>`);
         m.on("click", () => {
-          activeId = p.id;
-          renderList(list);
+          active = p.id;
+          render(items);
         });
         markers.push(m);
         bounds.push([p.lat, p.lng]);
       });
-      if (bounds.length) map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
     }
 
-    function renderList(list) {
-      currentResults = list;
-      if (!list.length) {
-        listEl.innerHTML = `<div class="empty">条件に合う施設が見つかりませんでした<br>場所やジャンルを変えて再検索してください</div>`;
-        countText.textContent = "0件";
-        sheet.classList.add("open");
+    function render(items) {
+      if (!items.length) {
+        $list.innerHTML = `<div class="empty">見つかりませんでした<br>場所やジャンルを変えてみてください</div>`;
+        $count.textContent = "0件";
+        $sheet.classList.add("open");
         return;
       }
-      countText.innerHTML = `<strong>${list.length}件</strong> 見つかりました`;
-      listEl.innerHTML = list.map(p => `
-        <div class="item ${activeId === p.id ? "active" : ""}" data-id="${p.id}">
-          <div class="item-icon">${p.icon}</div>
-          <div class="item-body">
-            <div class="item-cat">${p.category || "施設"}</div>
-            <div class="item-name">${p.name}</div>
-            <div class="item-meta">${p.address || ""}</div>
+      $count.innerHTML = `<b>${items.length}件</b>`;
+      $list.innerHTML = items.map(p => `
+        <div class="card ${active === p.id ? "on" : ""}" data-id="${p.id}">
+          <div class="card-icon">📍</div>
+          <div class="card-body">
+            <div class="card-name">${p.name}</div>
+            <div class="card-addr">${p.addr || "住所情報なし"}</div>
           </div>
         </div>
       `).join("");
 
-      listEl.querySelectorAll(".item").forEach(el => {
-        el.addEventListener("click", () => {
+      $list.querySelectorAll(".card").forEach(el => {
+        el.onclick = () => {
           const id = +el.dataset.id;
-          const p = list.find(x => x.id === id);
+          const p = items.find(x => x.id === id);
           if (!p) return;
-          activeId = id;
-          renderList(list);
+          active = id;
+          render(items);
           map.setView([p.lat, p.lng], 16);
           const m = markers.find(mk => {
             const ll = mk.getLatLng();
-            return Math.abs(ll.lat - p.lat) < 0.0001;
+            return Math.abs(ll.lat - p.lat) < 0.00005;
           });
           if (m) m.openPopup();
-        });
+        };
       });
-      sheet.classList.add("open");
+      $sheet.classList.add("open");
     }
 
-    async function search() {
-      searchBtn.disabled = true;
-      searchBtn.textContent = "…";
-      activeId = null;
-      listEl.innerHTML = `<div class="empty">検索中…</div>`;
-      sheet.classList.add("open");
-
-      const q = locationInput.value.trim();
-      const categoryKey = categorySelect.value;
-      let center = null;
+    async function run() {
+      $go.disabled = true;
+      $go.textContent = "…";
+      active = null;
+      $list.innerHTML = `<div class="empty">検索中…</div>`;
+      $sheet.classList.add("open");
 
       try {
-        if (q && q !== "現在地") {
-          center = await geocode(q);
-          if (!center) throw new Error("場所が見つかりませんでした");
-          lastCenter = center;
-        } else if (lastCenter && q === "現在地") {
-          center = lastCenter;
+        const text = $q.value.trim();
+        let c = null;
+        if (text && text !== "現在地") {
+          c = await geocode(text);
+          if (!c) throw new Error("場所が見つかりません");
+          center = c;
+        } else if (center && text === "現在地") {
+          c = center;
         }
 
-        const list = await searchOpenPOI(center, categoryKey);
-        showMarkers(list);
-        renderList(list);
+        const items = await fetchPOI(c, currentCat);
+        putMarkers(items);
+        render(items);
       } catch (e) {
-        console.error(e);
-        listEl.innerHTML = `<div class="empty">検索に失敗しました<br>${e.message || ""}</div>`;
-        countText.textContent = "エラー";
+        $list.innerHTML = `<div class="empty">${e.message || "エラーが起きました"}</div>`;
+        $count.textContent = "エラー";
         clearMarkers();
       } finally {
-        searchBtn.disabled = false;
-        searchBtn.textContent = "探す";
+        $go.disabled = false;
+        $go.textContent = "探す";
       }
     }
 
-    searchBtn.addEventListener("click", search);
-    locationInput.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+    $go.onclick = run;
+    $q.onkeydown = e => { if (e.key === "Enter") run(); };
 
-    document.getElementById("locBtn").addEventListener("click", () => {
-      if (!navigator.geolocation) return alert("位置情報に対応していません");
-      searchBtn.disabled = true;
-      searchBtn.textContent = "…";
+    document.getElementById("locBtn").onclick = () => {
+      if (!navigator.geolocation) return alert("位置情報非対応");
+      $go.disabled = true;
+      $go.textContent = "…";
       navigator.geolocation.getCurrentPosition(
         pos => {
-          lastCenter = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          locationInput.value = "現在地";
-          search();
+          center = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          $q.value = "現在地";
+          run();
         },
         () => {
-          alert("位置情報の取得に失敗しました");
-          searchBtn.disabled = false;
-          searchBtn.textContent = "探す";
+          alert("位置情報を取得できませんでした");
+          $go.disabled = false;
+          $go.textContent = "探す";
         }
       );
-    });
+    };
 
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      locationInput.value = "";
-      categorySelect.value = "all";
-      lastCenter = null;
-      activeId = null;
+    document.getElementById("clear").onclick = () => {
+      $q.value = "";
+      center = null;
+      active = null;
       clearMarkers();
-      listEl.innerHTML = `<div class="empty">駅名や地名を入れて「探す」を押してください</div>`;
-      countText.textContent = "場所を入れて探してください";
-      sheet.classList.remove("open");
-      map.setView([35.6812, 139.7671], 12);
-    });
+      $list.innerHTML = `<div class="empty">駅名や地名を入れて「探す」を押してください</div>`;
+      $count.textContent = "場所を入れて探してください";
+      $sheet.classList.remove("open");
+      map.setView([35.6812, 139.7671], 13);
+    };
   </script>
 </body>
 </html>
