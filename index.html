@@ -21,7 +21,6 @@
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -54,13 +53,8 @@
       font-weight: 800;
       letter-spacing: -.7px;
     }
-
     .brand span { color: var(--accent); }
-
-    .header-note {
-      color: var(--muted);
-      font-size: 13px;
-    }
+    .header-note { color: var(--muted); font-size: 13px; }
 
     main {
       width: min(1160px, calc(100% - 40px));
@@ -85,7 +79,6 @@
       font-weight: 700;
       letter-spacing: .04em;
     }
-
     .eyebrow::before {
       content: "";
       width: 6px;
@@ -101,7 +94,6 @@
       letter-spacing: -.055em;
       font-weight: 800;
     }
-
     .hero p {
       margin: 0;
       color: var(--muted);
@@ -130,7 +122,6 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .field label, .field-label {
       color: #3b424d;
       font-size: 13px;
@@ -138,7 +129,6 @@
     }
 
     .input-wrap { position: relative; }
-
     .input-wrap .pin {
       position: absolute;
       left: 13px;
@@ -159,20 +149,32 @@
       outline: none;
       transition: border-color .15s, box-shadow .15s;
     }
-
     .input-wrap input { padding-left: 39px; }
-
     input:focus, select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(36,107,206,.11);
     }
+
+    .location-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .loc-btn {
+      border: 1px solid #dce1e8;
+      background: #fff;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #4b5360;
+    }
+    .loc-btn:hover { border-color: var(--accent); color: var(--accent); }
 
     .filter-section {
       margin-top: 22px;
       padding-top: 21px;
       border-top: 1px solid #edf0f4;
     }
-
     .filter-top {
       display: flex;
       align-items: center;
@@ -180,9 +182,6 @@
       gap: 12px;
       margin-bottom: 12px;
     }
-
-    .filter-top .field-label { font-size: 13px; }
-
     .clear-button {
       border: 0;
       padding: 3px 0;
@@ -190,7 +189,6 @@
       background: transparent;
       font-size: 12px;
     }
-
     .clear-button:hover { color: var(--accent); }
 
     .chips {
@@ -198,7 +196,6 @@
       flex-wrap: wrap;
       gap: 8px;
     }
-
     .chip {
       min-height: 36px;
       padding: 7px 13px;
@@ -209,9 +206,7 @@
       font-size: 13px;
       transition: .15s;
     }
-
     .chip:hover { border-color: #9ab9e7; }
-
     .chip.active {
       border-color: var(--accent);
       color: var(--accent);
@@ -225,7 +220,6 @@
       gap: 14px;
       margin-top: 24px;
     }
-
     .search-button {
       min-height: 49px;
       flex: 1;
@@ -240,19 +234,18 @@
       font-weight: 700;
       transition: background .15s, transform .15s;
     }
-
     .search-button:hover { background: var(--accent-hover); }
     .search-button:active { transform: translateY(1px); }
-
+    .search-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
     .search-hint {
       color: var(--muted);
       font-size: 11px;
     }
 
-    .quick-section {
-      padding: 44px 0 14px;
-    }
-
+    .quick-section { padding: 44px 0 14px; }
     .section-heading {
       display: flex;
       align-items: end;
@@ -260,13 +253,11 @@
       gap: 16px;
       margin-bottom: 18px;
     }
-
     .section-heading h2 {
       margin: 0;
       font-size: 21px;
       letter-spacing: -.035em;
     }
-
     .section-heading p {
       margin: 5px 0 0;
       color: var(--muted);
@@ -278,7 +269,6 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 13px;
     }
-
     .quick-card {
       display: flex;
       align-items: center;
@@ -292,13 +282,11 @@
       color: var(--text);
       transition: border-color .15s, transform .15s, box-shadow .15s;
     }
-
     .quick-card:hover {
       border-color: #bfd1eb;
       transform: translateY(-2px);
       box-shadow: var(--shadow);
     }
-
     .quick-icon {
       width: 42px;
       height: 42px;
@@ -311,12 +299,7 @@
       font-size: 19px;
       font-weight: 700;
     }
-
-    .quick-card strong {
-      display: block;
-      font-size: 13px;
-    }
-
+    .quick-card strong { display: block; font-size: 13px; }
     .quick-card small {
       display: block;
       margin-top: 3px;
@@ -328,13 +311,11 @@
       padding: 38px 0 65px;
       scroll-margin-top: 20px;
     }
-
     .result-meta {
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
     }
-
     .notice {
       display: flex;
       gap: 10px;
@@ -353,14 +334,12 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
-
     .result-card {
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 15px;
       background: #fff;
     }
-
     .result-visual {
       min-height: 116px;
       display: flex;
@@ -371,7 +350,6 @@
       color: #59799f;
       font-size: 35px;
     }
-
     .sample-label {
       position: absolute;
       left: 12px;
@@ -384,35 +362,29 @@
       font-size: 10px;
       font-weight: 700;
     }
-
     .result-content { padding: 16px; }
-
     .result-category {
       color: var(--accent);
       font-size: 11px;
       font-weight: 700;
     }
-
     .result-content h3 {
       margin: 5px 0 7px;
       font-size: 17px;
       letter-spacing: -.025em;
     }
-
     .result-description {
       min-height: 40px;
       margin: 0;
       color: var(--muted);
       font-size: 12px;
     }
-
     .result-details {
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
       margin-top: 13px;
     }
-
     .detail-pill {
       padding: 4px 8px;
       border-radius: 6px;
@@ -420,7 +392,6 @@
       color: #4f5865;
       font-size: 11px;
     }
-
     .result-footer {
       display: flex;
       align-items: center;
@@ -430,19 +401,16 @@
       padding-top: 12px;
       border-top: 1px solid #edf0f3;
     }
-
     .result-footer span {
       color: var(--muted);
       font-size: 11px;
     }
-
     .map-link {
       color: var(--accent);
       font-size: 12px;
       font-weight: 700;
       text-decoration: none;
     }
-
     .map-link:hover { text-decoration: underline; }
 
     .empty-state {
@@ -453,15 +421,21 @@
       border-radius: 14px;
       background: #fff;
     }
-
     .empty-state strong { display: block; margin-bottom: 7px; }
     .empty-state p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .loading-state {
+      grid-column: 1 / -1;
+      padding: 48px 20px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
 
     footer {
       border-top: 1px solid var(--line);
       background: #fff;
     }
-
     .footer-inner {
       width: min(1160px, calc(100% - 40px));
       margin: 0 auto;
@@ -472,7 +446,6 @@
       color: var(--muted);
       font-size: 12px;
     }
-
     .footer-inner a { color: inherit; text-decoration: none; }
 
     @media (max-width: 800px) {
@@ -531,7 +504,10 @@
             <label for="location">どこで探す？</label>
             <div class="input-wrap">
               <span class="pin" aria-hidden="true">⌖</span>
-              <input id="location" name="location" type="text" placeholder="例：羽田空港、名古屋駅" autocomplete="off">
+              <input id="location" name="location" type="text" placeholder="例：羽田空港、名古屋駅、渋谷" autocomplete="off">
+            </div>
+            <div class="location-actions">
+              <button type="button" class="loc-btn" id="useCurrentLocation">現在地を使う</button>
             </div>
           </div>
           <div class="field">
@@ -571,11 +547,11 @@
         </div>
 
         <div class="search-actions">
-          <button class="search-button" type="submit">
+          <button class="search-button" type="submit" id="searchBtn">
             <span aria-hidden="true">⌕</span>
-            条件に合う場所を探す
+            <span id="searchBtnText">条件に合う場所を探す</span>
           </button>
-          <span class="search-hint">試作版：検索結果はサンプルです</span>
+          <span class="search-hint">試作版：実店舗API未接続（サンプル＋位置検索）</span>
         </div>
       </form>
     </section>
@@ -613,12 +589,12 @@
           <h2 id="resultsTitle">検索イメージ</h2>
           <p id="resultsDescription">実際の店舗情報を接続する前のサンプル表示です。</p>
         </div>
-        <span class="result-meta" id="resultCount">サンプル 3件</span>
+        <span class="result-meta" id="resultCount">サンプル 0件</span>
       </div>
 
       <div class="notice">
         <span aria-hidden="true">ⓘ</span>
-        <span>現在は動作確認用のサンプルデータです。店舗名・営業時間・決済対応など、実在する店舗の情報を示すものではありません。</span>
+        <span>現在は動作確認用のサンプルデータです。店舗名・営業時間・決済対応など、実在する店舗の情報を示すものではありません。位置情報だけは実際にジオコーディングしています。</span>
       </div>
 
       <div class="results-grid" id="resultsGrid"></div>
@@ -633,27 +609,30 @@
   </footer>
 
   <script>
+    // ========== サンプルデータ（増やした） ==========
     const samplePlaces = [
       {
         name: "サンプルカフェ A",
         category: "food",
         categoryLabel: "飲食店・カフェ",
-        description: "検索結果の表示例です。実店舗の情報ではありません。",
+        description: "静かに過ごせるカフェのサンプル。実店舗ではありません。",
         price: 900,
         priceLabel: "予算目安 〜900円",
-        payment: false,
+        payment: true,
         open: true,
         free: false,
         rain: true,
         quiet: true,
         icon: "☕",
-        tags: ["屋内", "休憩向け"]
+        tags: ["屋内", "休憩向け"],
+        lat: 35.5494,
+        lng: 139.7798
       },
       {
         name: "サンプルスポット B",
         category: "sightseeing",
         categoryLabel: "観光・遊び",
-        description: "カテゴリや条件で絞り込む動作を確認できます。",
+        description: "無料で楽しめる屋外スポットの例です。",
         price: 0,
         priceLabel: "無料",
         payment: false,
@@ -662,13 +641,15 @@
         rain: false,
         quiet: false,
         icon: "⌂",
-        tags: ["無料", "散策"]
+        tags: ["無料", "散策"],
+        lat: 35.6586,
+        lng: 139.7454
       },
       {
         name: "サンプルショップ C",
         category: "shopping",
         categoryLabel: "買い物",
-        description: "実際のデータ接続後は店舗情報に置き換えます。",
+        description: "Suica対応の屋内ショップ例。",
         price: 1800,
         priceLabel: "予算目安 〜1,800円",
         payment: true,
@@ -677,11 +658,68 @@
         rain: true,
         quiet: false,
         icon: "▧",
-        tags: ["屋内", "買い物"]
+        tags: ["屋内", "買い物"],
+        lat: 35.6812,
+        lng: 139.7671
+      },
+      {
+        name: "サンプル休憩所 D",
+        category: "rest",
+        categoryLabel: "休憩できる場所",
+        description: "静かに休める場所のサンプル。",
+        price: 500,
+        priceLabel: "予算目安 〜500円",
+        payment: true,
+        open: true,
+        free: false,
+        rain: true,
+        quiet: true,
+        icon: "🪑",
+        tags: ["屋内", "静音"],
+        lat: 35.7101,
+        lng: 139.8107
+      },
+      {
+        name: "サンプル屋外スポット E",
+        category: "sightseeing",
+        categoryLabel: "観光・遊び",
+        description: "雨の日は向かない屋外スポット例。",
+        price: 0,
+        priceLabel: "無料",
+        payment: false,
+        open: true,
+        free: true,
+        rain: false,
+        quiet: true,
+        icon: "🌳",
+        tags: ["無料", "屋外"],
+        lat: 35.6895,
+        lng: 139.6917
+      },
+      {
+        name: "サンプル食堂 F",
+        category: "food",
+        categoryLabel: "飲食店・カフェ",
+        description: "予算抑えめの食堂サンプル。",
+        price: 1200,
+        priceLabel: "予算目安 〜1,200円",
+        payment: false,
+        open: false,
+        free: false,
+        rain: true,
+        quiet: false,
+        icon: "🍜",
+        tags: ["屋内"],
+        lat: 35.6262,
+        lng: 139.7400
       }
     ];
 
+    // ========== 状態 ==========
     const activeFilters = new Set();
+    let lastLatLng = null; // 最後に成功したジオコーディング結果
+
+    // ========== DOM ==========
     const form = document.getElementById("searchForm");
     const locationInput = document.getElementById("location");
     const categorySelect = document.getElementById("category");
@@ -690,7 +728,10 @@
     const resultsTitle = document.getElementById("resultsTitle");
     const resultsDescription = document.getElementById("resultsDescription");
     const resultCount = document.getElementById("resultCount");
+    const searchBtn = document.getElementById("searchBtn");
+    const searchBtnText = document.getElementById("searchBtnText");
 
+    // ========== フィルタチップ ==========
     document.querySelectorAll("[data-filter]").forEach(button => {
       button.addEventListener("click", () => {
         const filter = button.dataset.filter;
@@ -706,11 +747,44 @@
       });
     });
 
-    function getFilteredPlaces() {
+    // ========== ジオコーディング（Nominatim） ==========
+    async function geocode(query) {
+      if (!query.trim()) return null;
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&countrycodes=jp`;
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": "YORIMICHI-Demo/1.0 (educational purpose)"
+        }
+      });
+      if (!res.ok) throw new Error("ジオコーディングに失敗しました");
+      const data = await res.json();
+      if (!data.length) return null;
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon),
+        displayName: data[0].display_name
+      };
+    }
+
+    // ========== 距離計算（簡易） ==========
+    function getDistanceKm(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // ========== フィルタ処理 ==========
+    function getFilteredPlaces(center = null) {
       const category = categorySelect.value;
       const budget = budgetSelect.value === "any" ? Infinity : Number(budgetSelect.value);
 
-      return samplePlaces.filter(place => {
+      let places = samplePlaces.filter(place => {
         if (category !== "all" && place.category !== category && !(category === "rest" && place.quiet)) return false;
         if (place.price > budget) return false;
         if (activeFilters.has("suica") && !place.payment) return false;
@@ -720,14 +794,32 @@
         if (activeFilters.has("quiet") && !place.quiet) return false;
         return true;
       });
+
+      // 位置がある場合は距離でソート
+      if (center) {
+        places = places.map(p => ({
+          ...p,
+          distance: getDistanceKm(center.lat, center.lng, p.lat, p.lng)
+        })).sort((a, b) => a.distance - b.distance);
+      }
+
+      return places;
     }
 
-    function renderResults(places, isSearch) {
+    // ========== 結果描画 ==========
+    function renderResults(places, isSearch, geoInfo = null) {
       const location = locationInput.value.trim();
+
       resultsTitle.textContent = isSearch ? "検索結果のイメージ" : "検索イメージ";
-      resultsDescription.textContent = location
-        ? `「${location}」を指定した検索画面のサンプルです。実際の場所検索は未接続です。`
-        : "条件に合わせて表示内容が変わるサンプルです。";
+
+      if (geoInfo) {
+        resultsDescription.textContent = `「${location}」周辺のサンプル表示です（実店舗データではありません）。`;
+      } else if (location) {
+        resultsDescription.textContent = `「${location}」を指定した検索画面のサンプルです。位置の特定に失敗したため、距離ソートは行っていません。`;
+      } else {
+        resultsDescription.textContent = "条件に合わせて表示内容が変わるサンプルです。";
+      }
+
       resultCount.textContent = `サンプル ${places.length}件`;
 
       if (places.length === 0) {
@@ -739,35 +831,82 @@
         return;
       }
 
-      resultsGrid.innerHTML = places.map(place => `
-        <article class="result-card">
-          <div class="result-visual">
-            <span class="sample-label">サンプルデータ</span>
-            <span aria-hidden="true">${place.icon}</span>
-          </div>
-          <div class="result-content">
-            <span class="result-category">${place.categoryLabel}</span>
-            <h3>${place.name}</h3>
-            <p class="result-description">${place.description}</p>
-            <div class="result-details">
-              <span class="detail-pill">${place.priceLabel}</span>
-              ${place.payment ? '<span class="detail-pill">決済条件の例</span>' : ""}
-              ${place.rain ? '<span class="detail-pill">屋内の例</span>' : ""}
-              ${place.free ? '<span class="detail-pill">無料の例</span>' : ""}
+      resultsGrid.innerHTML = places.map(place => {
+        const mapUrl = `https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=16/${place.lat}/${place.lng}`;
+        const distanceText = place.distance != null
+          ? `<span class="detail-pill">約${place.distance.toFixed(1)}km</span>`
+          : "";
+
+        return `
+          <article class="result-card">
+            <div class="result-visual">
+              <span class="sample-label">サンプルデータ</span>
+              <span aria-hidden="true">${place.icon}</span>
             </div>
-            <div class="result-footer">
-              <span>実在店舗の情報ではありません</span>
-              <a class="map-link" href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">地図を見る ↗</a>
+            <div class="result-content">
+              <span class="result-category">${place.categoryLabel}</span>
+              <h3>${place.name}</h3>
+              <p class="result-description">${place.description}</p>
+              <div class="result-details">
+                <span class="detail-pill">${place.priceLabel}</span>
+                ${distanceText}
+                ${place.payment ? '<span class="detail-pill">Suica例</span>' : ""}
+                ${place.rain ? '<span class="detail-pill">屋内の例</span>' : ""}
+                ${place.free ? '<span class="detail-pill">無料の例</span>' : ""}
+                ${!place.open ? '<span class="detail-pill">休業中の例</span>' : ""}
+              </div>
+              <div class="result-footer">
+                <span>実在店舗の情報ではありません</span>
+                <a class="map-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer">地図を見る ↗</a>
+              </div>
             </div>
-          </div>
-        </article>
-      `).join("");
+          </article>
+        `;
+      }).join("");
     }
 
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-      renderResults(getFilteredPlaces(), true);
-      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    // ========== 検索実行 ==========
+    async function doSearch() {
+      searchBtn.disabled = true;
+      searchBtnText.textContent = "検索中...";
+      resultsGrid.innerHTML = `<div class="loading-state">検索しています…</div>`;
+
+      const location = locationInput.value.trim();
+      let geoInfo = null;
+
+      try {
+        if (location && location !== "現在地") {
+          geoInfo = await geocode(location);
+          lastLatLng = geoInfo;
+        } else if (lastLatLng && location === "現在地") {
+          geoInfo = lastLatLng;
+        }
+
+        // ★ここが本物のAPI差し込みポイント
+        // 例: const realPlaces = await fetch('/api/hotpepper', { method:'POST', body: JSON.stringify({ lat: geoInfo?.lat, lng: geoInfo?.lng, ... }) }).then(r => r.json());
+        // 今はサンプルを使う
+        const places = getFilteredPlaces(geoInfo);
+
+        renderResults(places, true, geoInfo);
+      } catch (err) {
+        console.error(err);
+        resultsGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>検索に失敗しました</strong>
+            <p>${err.message || "しばらく待ってから再度お試しください。"}</p>
+          </div>`;
+        resultCount.textContent = "エラー";
+      } finally {
+        searchBtn.disabled = false;
+        searchBtnText.textContent = "条件に合う場所を探す";
+        document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    // ========== イベント ==========
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      doSearch();
     });
 
     document.getElementById("clearFilters").addEventListener("click", () => {
@@ -778,6 +917,8 @@
       });
       categorySelect.value = "all";
       budgetSelect.value = "any";
+      locationInput.value = "";
+      lastLatLng = null;
       renderResults(samplePlaces, false);
     });
 
@@ -810,11 +951,39 @@
           }
         });
 
-        renderResults(getFilteredPlaces(), true);
-        document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+        doSearch();
       });
     });
 
+    // 現在地
+    document.getElementById("useCurrentLocation").addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        alert("このブラウザは位置情報に対応していません");
+        return;
+      }
+      searchBtn.disabled = true;
+      searchBtnText.textContent = "位置取得中...";
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          lastLatLng = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            displayName: "現在地"
+          };
+          locationInput.value = "現在地";
+          doSearch();
+        },
+        () => {
+          alert("位置情報の取得に失敗しました。ブラウザの設定を確認してください。");
+          searchBtn.disabled = false;
+          searchBtnText.textContent = "条件に合う場所を探す";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+
+    // 初期表示
     renderResults(samplePlaces, false);
   </script>
 </body>
