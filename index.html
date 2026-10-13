@@ -5,152 +5,307 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>ネコパンチ！</title>
 <style>
-:root{--ink:#302936;--cream:#fffaf2}*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Trebuchet MS","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;color:var(--ink)}body{padding:10px;background:radial-gradient(#fff9 1.5px,transparent 1.5px),linear-gradient(140deg,#bdeafa,#f9e5d1 58%,#ffd8d2);background-size:24px 24px,auto}button{font:inherit;font-weight:900;border:3px solid var(--ink);border-radius:13px;padding:10px 12px;box-shadow:3px 4px 0 var(--ink);cursor:pointer;touch-action:manipulation}button:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--ink)}.game{width:min(930px,100%);margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.logo{font-size:clamp(1.7rem,4vw,2.5rem);font-weight:1000;letter-spacing:-.07em;text-shadow:2px 3px white}.logo b{color:#ff6b61}.subtitle{font-size:.75rem;font-weight:800;margin-top:4px}.stats{display:flex;gap:6px}.stat{min-width:62px;padding:6px 8px;text-align:center;border:2px solid var(--ink);border-radius:12px;background:#fffdf8;box-shadow:2px 3px 0 var(--ink)}.stat small{display:block;font-size:.64rem;font-weight:900}.stat strong{display:block;font-size:1.25rem}.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(225px,.78fr);gap:12px}.arena{position:relative;height:min(66vh,570px);min-height:440px;overflow:hidden;border:3px solid var(--ink);border-radius:23px;background:linear-gradient(#c9efff 0 49%,#fff0d8 49% 53%,#e8bd91 53%);box-shadow:5px 6px 0 var(--ink);display:flex;align-items:flex-end;justify-content:center;padding:10px;cursor:pointer;user-select:none;touch-action:manipulation}.window{position:absolute;left:6%;top:16px;width:105px;height:92px;border:6px solid #b77c54;border-radius:8px;background:linear-gradient(#8bd9f7 0 72%,#a4d69a 72%)}.window:before,.window:after{content:"";position:absolute;background:#b77c54}.window:before{height:100%;width:5px;left:50%}.window:after{width:100%;height:5px;top:50%}.plant{position:absolute;left:5%;bottom:66px;font-size:2.4rem}.shelf{position:absolute;right:0;top:100px;width:55px;height:130px;background:#c28d68;border:3px solid #93664d;border-right:0;border-radius:8px 0 0 8px;display:grid;place-items:center;font-size:1.2rem}.cat-wrap{position:relative;z-index:2;width:min(300px,78%);margin-bottom:50px;transform-origin:50% 90%}.cat{display:block;width:100%;filter:drop-shadow(0 6px 0 #9b725333)}.cat-wrap.punched{animation:punch .48s cubic-bezier(.2,.9,.3,1)}.cat-wrap.comforted{animation:comfort .8s ease}@keyframes punch{0%{transform:translate(0) rotate(0) scale(1)}15%{transform:translate(17px,3px) rotate(7deg) scale(.94)}35%{transform:translate(-12px,-4px) rotate(-6deg) scale(1.04)}58%{transform:translate(5px,0) rotate(3deg)}100%{transform:translate(0) rotate(0) scale(1)}}@keyframes comfort{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-11px) scale(1.03)}55%{transform:translateY(1px)}75%{transform:rotate(-3deg)}}.cat .bump,.cat .bruise,.cat .tear,.cat .heart,.cat .eyes-angry,.cat .eyes-sad,.cat .mouth-angry,.cat .mouth-sad{opacity:0;transition:opacity .2s}.cat[data-stage="1"] .bump{opacity:1}.cat[data-stage="2"] .bump,.cat[data-stage="2"] .bruise,.cat[data-stage="2"] .eyes-angry,.cat[data-stage="2"] .mouth-angry{opacity:1}.cat[data-stage="3"] .bump,.cat[data-stage="3"] .bruise,.cat[data-stage="3"] .tear,.cat[data-stage="3"] .eyes-sad,.cat[data-stage="3"] .mouth-sad{opacity:1}.cat[data-mood="comfort"] .heart,.cat[data-mood="happy"] .heart{opacity:1}.cat[data-mood="comfort"] .eyes-normal,.cat[data-mood="happy"] .eyes-normal{opacity:0}.cat[data-mood="comfort"] .eyes-happy,.cat[data-mood="happy"] .eyes-happy{opacity:1}.eyes-happy{opacity:0}.speech{position:absolute;z-index:5;left:50%;bottom:13px;transform:translateX(-50%);width:min(90%,390px);min-height:53px;display:flex;align-items:center;justify-content:center;text-align:center;padding:9px 14px;background:#fffdf8;border:3px solid var(--ink);border-radius:17px;font-weight:1000;font-size:clamp(.8rem,2vw,.98rem);line-height:1.35;box-shadow:2px 3px #30293622}.speech:before{content:"";position:absolute;top:-9px;left:50%;width:13px;height:13px;background:#fffdf8;border-left:3px solid var(--ink);border-top:3px solid var(--ink);transform:translateX(-50%) rotate(45deg)}.shadow{position:absolute;bottom:65px;width:55%;height:16px;background:#9d6f5045;border-radius:50%}.hit-text{position:absolute;z-index:6;left:50%;top:36%;transform:translate(-50%,-50%) scale(.4);opacity:0;color:#ff604e;font-weight:1000;font-size:clamp(2.3rem,7vw,4rem);-webkit-text-stroke:2px white;text-shadow:3px 3px var(--ink);white-space:nowrap;pointer-events:none}.hit-text.show{animation:hit .78s ease-out}@keyframes hit{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-15deg)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(8deg)}58%{opacity:1;transform:translate(-50%,-72%) scale(1)}100%{opacity:0;transform:translate(-50%,-105%) scale(.8)}}.fist{position:absolute;z-index:6;right:12%;top:36%;font-size:clamp(3rem,9vw,4.7rem);opacity:0;pointer-events:none}.fist.show{animation:fist .46s ease-in-out}@keyframes fist{0%{opacity:0;transform:translate(70px,-20px) rotate(25deg) scale(.55)}35%{opacity:1;transform:translate(-45px,10px) rotate(-15deg) scale(1.15)}100%{opacity:0;transform:translate(-75px,25px) rotate(-20deg) scale(.9)}}.float{position:absolute;z-index:7;pointer-events:none;font-weight:1000;font-size:1.15rem;animation:float 1s ease-out forwards;text-shadow:2px 2px white}@keyframes float{0%{opacity:0;transform:translateY(12px) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translateY(-75px) scale(1.1)}}.side{display:flex;flex-direction:column;gap:9px}.panel{border:2px solid var(--ink);border-radius:17px;background:var(--cream);padding:12px;box-shadow:3px 4px var(--ink)}.meter-label,.progress-head{display:flex;justify-content:space-between;gap:5px;font-size:.76rem;font-weight:1000}.meter{height:18px;border:2px solid var(--ink);border-radius:18px;background:#e9ddd1;overflow:hidden;margin-top:6px}.meter-fill{height:100%;width:0%;background:repeating-linear-gradient(135deg,#ff9b89 0 10px,#ffb5a8 10px 20px);transition:width .3s}.caption{font-size:.68rem;font-weight:800;margin-top:4px;color:#675966}.xp-meter{height:10px;border:2px solid var(--ink);border-radius:15px;background:#e9ddd1;overflow:hidden;margin-top:5px}.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffe27a,#ffae49);transition:width .3s}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}#punch{background:#ffb94f}#comfort{background:#ffb7cf}#reset{background:white;width:100%;font-size:.78rem;padding:7px}.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}.level{border:2px solid #d5c5b6;border-radius:9px;background:white;text-align:center;padding:6px 1px;font-size:.62rem;font-weight:900;opacity:.6}.level span{display:block;font-size:1.15rem}.level.active{opacity:1;border-color:var(--ink);background:#ffe6aa}.long{height:12px;margin-top:6px;border:2px solid var(--ink);border-radius:20px;background:#e9ded0;overflow:hidden}.long-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffcb59,#ff8d8d,#bca2ef);transition:width .35s}.note{text-align:center;font-size:.68rem;color:#66555b;font-weight:700;margin:10px 0 0}
-@media(max-width:700px){body{padding:8px}.layout{grid-template-columns:1fr;gap:9px}.arena{height:clamp(350px,49vh,440px);min-height:350px}.cat-wrap{width:min(280px,74%);margin-bottom:48px}.side{display:grid;grid-template-columns:1fr 1fr;gap:8px}.side .panel:first-child{grid-column:1/-1}.window{width:82px;height:75px}.shelf{top:95px}.plant{bottom:60px}.stat{min-width:0;flex:1;padding:5px 6px}.stat strong{font-size:1.15rem}.subtitle{font-size:.68rem}}
-@media(max-width:390px){.arena{height:340px;min-height:340px}.cat-wrap{width:74%;margin-bottom:46px}.speech{width:92%;font-size:.78rem;min-height:48px;padding:7px 10px}.side{grid-template-columns:1fr}.side .panel:first-child{grid-column:auto}.logo{font-size:1.65rem}}
-@media(min-width:701px) and (max-height:780px){.arena{height:420px;min-height:420px}.cat-wrap{width:270px}.panel{padding:9px}.side{gap:7px}}
+:root{--ink:#2b2430;--cream:#fffaf3}*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Trebuchet MS","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;color:var(--ink)}body{padding:12px;background:radial-gradient(#fff8 1.5px,transparent 1.5px),linear-gradient(145deg,#c5eefb,#fce8d4 55%,#ffd6d0);background-size:22px 22px,auto}button{font:inherit;font-weight:900;border:3px solid var(--ink);border-radius:14px;padding:11px 14px;box-shadow:3px 4px 0 var(--ink);cursor:pointer;touch-action:manipulation}button:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--ink)}.game{width:min(920px,100%);margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.logo{font-size:clamp(1.8rem,4.2vw,2.6rem);font-weight:1000;letter-spacing:-.06em;text-shadow:2px 3px #fff}.logo b{color:#ff5e55}.subtitle{font-size:.78rem;font-weight:800;margin-top:3px;opacity:.85}.stats{display:flex;gap:7px}.stat{min-width:64px;padding:7px 9px;text-align:center;border:2.5px solid var(--ink);border-radius:13px;background:#fffdf9;box-shadow:2px 3px 0 var(--ink)}.stat small{display:block;font-size:.65rem;font-weight:900}.stat strong{display:block;font-size:1.3rem}.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(230px,.78fr);gap:14px}.arena{position:relative;height:min(64vh,560px);min-height:430px;overflow:hidden;border:3.5px solid var(--ink);border-radius:24px;background:linear-gradient(#c8f0ff 0 48%,#fff1dc 48% 52%,#e9c09a 52%);box-shadow:5px 7px 0 var(--ink);display:flex;align-items:flex-end;justify-content:center;padding:12px;cursor:pointer;user-select:none;touch-action:manipulation}.window{position:absolute;left:7%;top:18px;width:98px;height:86px;border:5.5px solid #b57a50;border-radius:7px;background:linear-gradient(#8ad8f6 0 70%,#a3d59a 70%)}.window:before,.window:after{content:"";position:absolute;background:#b57a50}.window:before{height:100%;width:4.5px;left:50%}.window:after{width:100%;height:4.5px;top:50%}.plant{position:absolute;left:5%;bottom:62px;font-size:2.3rem}.shelf{position:absolute;right:0;top:95px;width:52px;height:125px;background:#c28b65;border:3px solid #91644b;border-right:0;border-radius:8px 0 0 8px;display:grid;place-items:center;font-size:1.15rem}.cat-wrap{position:relative;z-index:2;width:min(290px,76%);margin-bottom:48px;transform-origin:50% 88%}.cat{display:block;width:100%;filter:drop-shadow(0 7px 0 #9a6f4e40)}.cat-wrap.punched{animation:punch .45s cubic-bezier(.2,.9,.3,1)}.cat-wrap.comforted{animation:comfort .75s ease}@keyframes punch{0%{transform:translate(0) rotate(0) scale(1)}15%{transform:translate(16px,4px) rotate(6deg) scale(.93)}35%{transform:translate(-11px,-5px) rotate(-5deg) scale(1.05)}55%{transform:translate(4px,0) rotate(2deg)}100%{transform:translate(0) rotate(0) scale(1)}}@keyframes comfort{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-12px) scale(1.04)}55%{transform:translateY(2px)}75%{transform:rotate(-2.5deg)}}.cat .bump,.cat .bruise,.cat .tear,.cat .heart,.cat .eyes-angry,.cat .eyes-sad,.cat .mouth-angry,.cat .mouth-sad{opacity:0;transition:opacity .18s}.cat[data-stage="1"] .bump{opacity:1}.cat[data-stage="2"] .bump,.cat[data-stage="2"] .bruise,.cat[data-stage="2"] .eyes-angry,.cat[data-stage="2"] .mouth-angry{opacity:1}.cat[data-stage="3"] .bump,.cat[data-stage="3"] .bruise,.cat[data-stage="3"] .tear,.cat[data-stage="3"] .eyes-sad,.cat[data-stage="3"] .mouth-sad{opacity:1}.cat[data-mood="comfort"] .heart,.cat[data-mood="happy"] .heart{opacity:1}.cat[data-mood="comfort"] .eyes-normal,.cat[data-mood="happy"] .eyes-normal{opacity:0}.cat[data-mood="comfort"] .eyes-happy,.cat[data-mood="happy"] .eyes-happy{opacity:1}.eyes-happy{opacity:0}.speech{position:absolute;z-index:5;left:50%;bottom:12px;transform:translateX(-50%);width:min(88%,380px);min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px 15px;background:#fffdf9;border:3px solid var(--ink);border-radius:16px;font-weight:1000;font-size:clamp(.82rem,2vw,1rem);line-height:1.35;box-shadow:2px 3px #2b243022}.speech:before{content:"";position:absolute;top:-8px;left:50%;width:12px;height:12px;background:#fffdf9;border-left:3px solid var(--ink);border-top:3px solid var(--ink);transform:translateX(-50%) rotate(45deg)}.shadow{position:absolute;bottom:62px;width:52%;height:15px;background:#9a6f4e38;border-radius:50%}.hit-text{position:absolute;z-index:6;left:50%;top:35%;transform:translate(-50%,-50%) scale(.4);opacity:0;color:#ff5548;font-weight:1000;font-size:clamp(2.4rem,7.5vw,4.1rem);-webkit-text-stroke:2px white;text-shadow:3px 3px var(--ink);white-space:nowrap;pointer-events:none}.hit-text.show{animation:hit .75s ease-out}@keyframes hit{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-12deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(7deg)}55%{opacity:1;transform:translate(-50%,-70%) scale(1)}100%{opacity:0;transform:translate(-50%,-100%) scale(.85)}}.fist{position:absolute;z-index:6;right:11%;top:35%;font-size:clamp(3.1rem,9.5vw,4.8rem);opacity:0;pointer-events:none}.fist.show{animation:fist .44s ease-in-out}@keyframes fist{0%{opacity:0;transform:translate(65px,-18px) rotate(22deg) scale(.5)}32%{opacity:1;transform:translate(-42px,8px) rotate(-12deg) scale(1.12)}100%{opacity:0;transform:translate(-70px,22px) rotate(-18deg) scale(.88)}}.float{position:absolute;z-index:7;pointer-events:none;font-weight:1000;font-size:1.2rem;animation:float .95s ease-out forwards;text-shadow:2px 2px #fff}@keyframes float{0%{opacity:0;transform:translateY(10px) scale(.65)}18%{opacity:1}100%{opacity:0;transform:translateY(-70px) scale(1.08)}}.side{display:flex;flex-direction:column;gap:10px}.panel{border:2.5px solid var(--ink);border-radius:16px;background:var(--cream);padding:13px;box-shadow:3px 4px var(--ink)}.meter-label,.progress-head{display:flex;justify-content:space-between;gap:5px;font-size:.78rem;font-weight:1000}.meter{height:17px;border:2.5px solid var(--ink);border-radius:17px;background:#e8ddd0;overflow:hidden;margin-top:6px}.meter-fill{height:100%;width:0%;background:repeating-linear-gradient(135deg,#ff9585 0 9px,#ffb0a2 9px 18px);transition:width .28s}.caption{font-size:.7rem;font-weight:800;margin-top:4px;color:#6a5866}.xp-meter{height:10px;border:2.5px solid var(--ink);border-radius:14px;background:#e8ddd0;overflow:hidden;margin-top:5px}.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffe06e,#ffab42);transition:width .28s}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}#punch{background:#ffb84a}#comfort{background:#ffb4cb}#reset{background:#fff;width:100%;font-size:.8rem;padding:8px}.levels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}.level{border:2px solid #d4c4b4;border-radius:10px;background:#fff;text-align:center;padding:7px 2px;font-size:.64rem;font-weight:900;opacity:.55}.level span{display:block;font-size:1.2rem}.level.active{opacity:1;border-color:var(--ink);background:#ffe8a8}.long{height:11px;margin-top:6px;border:2.5px solid var(--ink);border-radius:18px;background:#e8ddd0;overflow:hidden}.long-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffc84e,#ff8e8e,#bca0f0);transition:width .32s}.note{text-align:center;font-size:.7rem;color:#66555c;font-weight:700;margin:12px 0 0}
+@media(max-width:700px){body{padding:9px}.layout{grid-template-columns:1fr;gap:10px}.arena{height:clamp(340px,48vh,430px);min-height:340px}.cat-wrap{width:min(270px,73%);margin-bottom:46px}.side{display:grid;grid-template-columns:1fr 1fr;gap:9px}.side .panel:first-child{grid-column:1/-1}.window{width:78px;height:70px}.shelf{top:90px}.plant{bottom:55px}.stat{min-width:0;flex:1;padding:6px 7px}.stat strong{font-size:1.18rem}.subtitle{font-size:.7rem}}
+@media(max-width:390px){.arena{height:330px;min-height:330px}.cat-wrap{width:72%;margin-bottom:44px}.speech{width:90%;font-size:.8rem;min-height:48px;padding:8px 11px}.side{grid-template-columns:1fr}.side .panel:first-child{grid-column:auto}.logo{font-size:1.7rem}}
+@media(min-width:701px) and (max-height:780px){.arena{height:410px;min-height:410px}.cat-wrap{width:260px}.panel{padding:10px}.side{gap:8px}}
 </style>
 </head>
-<body><main class="game">
-<header><div><div class="logo">ネコ<b>パンチ！</b></div><div class="subtitle">生意気ネコと、なんか長い一日。</div></div><div class="stats"><div class="stat"><small>パンチ数</small><strong id="score">0</strong></div><div class="stat"><small>XP</small><strong id="xp">0</strong></div><div class="stat"><small>なかよし</small><strong id="bond">0</strong></div></div></header>
+<body>
+<main class="game">
+<header>
+  <div>
+    <div class="logo">ネコ<b>パンチ！</b></div>
+    <div class="subtitle">生意気ネコと、なんか長い一日。</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><small>パンチ数</small><strong id="score">0</strong></div>
+    <div class="stat"><small>XP</small><strong id="xp">0</strong></div>
+    <div class="stat"><small>なかよし</small><strong id="bond">0</strong></div>
+  </div>
+</header>
+
 <div class="layout">
-<section class="arena" id="arena" aria-label="猫をタップ">
-<div class="window"></div><div class="plant">🪴</div><div class="shelf">🧸<br>📚</div><div class="shadow"></div>
-<div class="cat-wrap" id="catWrap">
-<svg class="cat" id="cat" data-stage="0" data-mood="normal" viewBox="0 0 280 300" role="img" aria-label="生意気な猫">
-  <!-- 耳（外側） -->
-  <path d="M78 100 L55 25 Q52 5 75 18 L125 68 Q140 55 155 68 L205 18 Q228 5 225 25 L202 100" fill="#5d5a62" stroke="#302936" stroke-width="5.5" stroke-linejoin="round"/>
-  <!-- 耳（内側ピンク） -->
-  <path d="M72 40 L105 68 L85 85Z M208 40 L175 68 L195 85Z" fill="#ff9eb5"/>
-  
-  <!-- 体（丸くふっくら） -->
-  <ellipse cx="140" cy="175" rx="95" ry="100" fill="#fff6eb" stroke="#302936" stroke-width="6"/>
-  
-  <!-- 頭の影っぽい部分 -->
-  <path d="M70 115 Q80 75 120 72 L140 74 L160 72 Q200 75 210 115 Q208 145 190 155 Q160 165 140 163 Q120 165 90 155 Q72 145 70 115Z" fill="#5d5a62"/>
-  
-  <!-- 顔のベース（白） -->
-  <ellipse cx="140" cy="145" rx="78" ry="70" fill="#fff6eb" stroke="#302936" stroke-width="5.5"/>
-  
-  <!-- ほっぺ -->
-  <circle cx="85" cy="160" r="14" fill="#ffb3c1" opacity=".55"/>
-  <circle cx="195" cy="160" r="14" fill="#ffb3c1" opacity=".55"/>
-  
-  <!-- 普通の目（大きくて寄ってる） -->
-  <g class="eyes-normal">
-    <ellipse cx="112" cy="138" rx="24" ry="28" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <ellipse cx="168" cy="138" rx="24" ry="28" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <ellipse cx="114" cy="142" rx="11" ry="15" fill="#302936"/>
-    <ellipse cx="170" cy="142" rx="11" ry="15" fill="#302936"/>
-    <circle cx="118" cy="135" r="4" fill="#fff"/>
-    <circle cx="174" cy="135" r="4" fill="#fff"/>
-    <path d="M92 122 Q112 110 132 125 M148 125 Q168 110 188 122" fill="none" stroke="#302936" stroke-width="5.5" stroke-linecap="round"/>
-  </g>
-  
-  <!-- 怒り目 -->
-  <g class="eyes-angry">
-    <path d="M90 138 Q115 118 140 138 L136 158 Q112 170 95 152Z" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <path d="M140 138 Q165 118 190 138 L185 152 Q162 170 145 158Z" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <ellipse cx="115" cy="144" rx="9" ry="12" fill="#302936"/>
-    <ellipse cx="165" cy="144" rx="9" ry="12" fill="#302936"/>
-    <path d="M88 115 L142 132 M192 115 L138 132" stroke="#302936" stroke-width="6.5" stroke-linecap="round"/>
-  </g>
-  
-  <!-- 悲しみ目 -->
-  <g class="eyes-sad">
-    <path d="M92 142 Q114 118 138 140 Q128 162 110 160 Q96 157 92 142Z" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <path d="M142 140 Q166 118 188 142 Q180 157 166 160 Q148 162 142 140Z" fill="#fff" stroke="#302936" stroke-width="3.2"/>
-    <ellipse cx="114" cy="144" rx="10" ry="13" fill="#302936"/>
-    <ellipse cx="166" cy="144" rx="10" ry="13" fill="#302936"/>
-    <circle cx="117" cy="139" r="3.5" fill="#fff"/>
-    <circle cx="169" cy="139" r="3.5" fill="#fff"/>
-    <path d="M92 124 Q114 108 136 130 M144 130 Q166 108 188 124" fill="none" stroke="#302936" stroke-width="5" stroke-linecap="round"/>
-  </g>
-  
-  <!-- 幸せ目 -->
-  <g class="eyes-happy">
-    <path d="M95 142 Q114 124 133 142 M147 142 Q166 124 185 142" fill="none" stroke="#302936" stroke-width="5" stroke-linecap="round"/>
-  </g>
-  
-  <!-- 鼻 -->
-  <path d="M132 162 Q140 154 148 162 Q140 172 132 162Z" fill="#ff8fa3" stroke="#302936" stroke-width="2"/>
-  
-  <!-- 普通の口 -->
-  <path d="M140 172 L140 178 M140 178 Q130 188 122 182 M140 178 Q150 188 158 182" fill="none" stroke="#302936" stroke-width="2.8" stroke-linecap="round"/>
-  
-  <!-- 怒り口 -->
-  <g class="mouth-angry">
-    <path d="M126 180 Q140 170 154 180 L150 194 L130 194Z" fill="#e86d80" stroke="#302936" stroke-width="2.5"/>
-    <path d="M134 183 L138 187 L142 183 L146 187" fill="none" stroke="#fff" stroke-width="2"/>
-  </g>
-  
-  <!-- 悲しみ口 -->
-  <g class="mouth-sad">
-    <path d="M128 188 Q140 172 152 188 Q140 200 128 188Z" fill="#a84e61" stroke="#302936" stroke-width="2.5"/>
-    <path d="M134 188 Q140 193 146 188" fill="none" stroke="#ffb8c1" stroke-width="2"/>
-  </g>
-  
-  <!-- ひげ -->
-  <g fill="none" stroke="#8a7f84" stroke-width="2.1" stroke-linecap="round">
-    <path d="M95 168 L62 160 M96 178 L65 182 M185 168 L218 160 M184 178 L215 182"/>
-  </g>
-  
-  <!-- 前足 -->
-  <ellipse cx="105" cy="255" rx="22" ry="18" fill="#fff6eb" stroke="#302936" stroke-width="4"/>
-  <ellipse cx="175" cy="255" rx="22" ry="18" fill="#fff6eb" stroke="#302936" stroke-width="4"/>
-  
-  <!-- しっぽ -->
-  <path d="M70 200 Q30 210 40 245 Q50 265 75 250" fill="none" stroke="#302936" stroke-width="16" stroke-linecap="round"/>
-  <path d="M70 200 Q30 210 40 245 Q50 265 75 250" fill="none" stroke="#5d5a62" stroke-width="10" stroke-linecap="round"/>
-  
-  <!-- たんこぶ -->
-  <g class="bump">
-    <ellipse cx="195" cy="78" rx="15" ry="17" fill="#ffb3aa" stroke="#302936" stroke-width="2.8"/>
-    <path d="M186 72 Q194 66 202 73 M190 84 L197 87" fill="none" stroke="#d86c70" stroke-width="2" stroke-linecap="round"/>
-    <path d="M205 62 L210 56 M208 74 L216 73" stroke="#ff6d62" stroke-width="2.8" stroke-linecap="round"/>
-  </g>
-  
-  <!-- アザ -->
-  <g class="bruise" fill="none" stroke="#b28cc6" stroke-width="5.5" stroke-linecap="round">
-    <path d="M95 175 L106 170 M110 182 L120 176 M160 175 L171 170 M175 182 L185 176"/>
-  </g>
-  
-  <!-- 涙 -->
-  <g class="tear" fill="#79d6ff" stroke="#302936" stroke-width="2">
-    <path d="M114 158 Q100 175 114 186 Q128 175 114 158Z"/>
-    <path d="M166 158 Q152 175 166 186 Q180 175 166 158Z"/>
-  </g>
-  
-  <!-- ハート -->
-  <g class="heart" fill="#ff6f9d" stroke="#302936" stroke-width="1.6">
-    <path d="M95 85 C82 72 68 88 95 105 C122 88 108 72 95 85Z"/>
-    <path d="M185 88 C174 78 164 90 185 105 C206 90 196 78 185 88Z"/>
-  </g>
-</svg>
+  <section class="arena" id="arena" aria-label="猫をタップ">
+    <div class="window"></div>
+    <div class="plant">🪴</div>
+    <div class="shelf">🧸<br>📚</div>
+    <div class="shadow"></div>
+
+    <div class="cat-wrap" id="catWrap">
+      <svg class="cat" id="cat" data-stage="0" data-mood="normal" viewBox="0 0 260 280" role="img" aria-label="生意気な猫">
+        <!-- 耳 -->
+        <path d="M72 95 L48 22 Q45 4 68 16 L115 65 Q130 52 145 65 L192 16 Q215 4 212 22 L188 95" fill="#4f4c55" stroke="#2b2430" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M66 38 L98 62 L80 78Z M194 38 L162 62 L180 78Z" fill="#ff9aad"/>
+
+        <!-- 体（超丸） -->
+        <ellipse cx="130" cy="175" rx="92" ry="95" fill="#fff5e8" stroke="#2b2430" stroke-width="5.5"/>
+
+        <!-- 頭のグレー部分 -->
+        <path d="M65 108 Q75 70 115 66 L130 68 L145 66 Q185 70 195 108 Q193 138 175 148 Q150 156 130 154 Q110 156 85 148 Q67 138 65 108Z" fill="#4f4c55"/>
+
+        <!-- 顔 -->
+        <ellipse cx="130" cy="138" rx="72" ry="64" fill="#fff5e8" stroke="#2b2430" stroke-width="5"/>
+
+        <!-- ほっぺ -->
+        <circle cx="82" cy="152" r="13" fill="#ffb0c0" opacity=".6"/>
+        <circle cx="178" cy="152" r="13" fill="#ffb0c0" opacity=".6"/>
+
+        <!-- 普通の目 -->
+        <g class="eyes-normal">
+          <ellipse cx="106" cy="132" rx="22" ry="26" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <ellipse cx="154" cy="132" rx="22" ry="26" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <ellipse cx="108" cy="136" rx="10" ry="14" fill="#2b2430"/>
+          <ellipse cx="156" cy="136" rx="10" ry="14" fill="#2b2430"/>
+          <circle cx="111" cy="129" r="3.5" fill="#fff"/>
+          <circle cx="159" cy="129" r="3.5" fill="#fff"/>
+          <path d="M88 117 Q106 106 124 120 M136 120 Q154 106 172 117" fill="none" stroke="#2b2430" stroke-width="5" stroke-linecap="round"/>
+        </g>
+
+        <!-- 怒り目 -->
+        <g class="eyes-angry">
+          <path d="M86 132 Q108 114 130 132 L126 150 Q106 160 92 145Z" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <path d="M130 132 Q152 114 174 132 L170 145 Q150 160 134 150Z" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <ellipse cx="108" cy="138" rx="8.5" ry="11.5" fill="#2b2430"/>
+          <ellipse cx="152" cy="138" rx="8.5" ry="11.5" fill="#2b2430"/>
+          <path d="M84 112 L132 126 M176 112 L128 126" stroke="#2b2430" stroke-width="6" stroke-linecap="round"/>
+        </g>
+
+        <!-- 悲しみ目 -->
+        <g class="eyes-sad">
+          <path d="M88 136 Q108 114 128 134 Q120 154 104 152 Q92 149 88 136Z" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <path d="M132 134 Q152 114 172 136 Q164 149 152 152 Q136 154 132 134Z" fill="#fff" stroke="#2b2430" stroke-width="3"/>
+          <ellipse cx="107" cy="138" rx="9" ry="12" fill="#2b2430"/>
+          <ellipse cx="153" cy="138" rx="9" ry="12" fill="#2b2430"/>
+          <circle cx="110" cy="133" r="3.2" fill="#fff"/>
+          <circle cx="156" cy="133" r="3.2" fill="#fff"/>
+          <path d="M88 120 Q108 106 126 126 M134 126 Q152 106 172 120" fill="none" stroke="#2b2430" stroke-width="4.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- 幸せ目 -->
+        <g class="eyes-happy">
+          <path d="M90 136 Q106 120 122 136 M138 136 Q154 120 170 136" fill="none" stroke="#2b2430" stroke-width="4.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- 鼻 -->
+        <path d="M123 154 Q130 147 137 154 Q130 163 123 154Z" fill="#ff8a9e" stroke="#2b2430" stroke-width="1.8"/>
+
+        <!-- 普通の口 -->
+        <path d="M130 163 L130 168 M130 168 Q121 176 114 172 M130 168 Q139 176 146 172" fill="none" stroke="#2b2430" stroke-width="2.5" stroke-linecap="round"/>
+
+        <!-- 怒り口 -->
+        <g class="mouth-angry">
+          <path d="M118 170 Q130 161 142 170 L139 182 L121 182Z" fill="#e65d72" stroke="#2b2430" stroke-width="2.2"/>
+          <path d="M124 173 L128 176 L132 173 L136 176" fill="none" stroke="#fff" stroke-width="1.8"/>
+        </g>
+
+        <!-- 悲しみ口 -->
+        <g class="mouth-sad">
+          <path d="M120 176 Q130 163 140 176 Q130 186 120 176Z" fill="#a04a5c" stroke="#2b2430" stroke-width="2.2"/>
+          <path d="M125 176 Q130 180 135 176" fill="none" stroke="#ffb4c0" stroke-width="1.8"/>
+        </g>
+
+        <!-- ひげ -->
+        <g fill="none" stroke="#8a7f86" stroke-width="1.9" stroke-linecap="round">
+          <path d="M90 158 L60 150 M91 167 L62 172 M170 158 L200 150 M169 167 L198 172"/>
+        </g>
+
+        <!-- 前足 -->
+        <ellipse cx="100" cy="245" rx="20" ry="16" fill="#fff5e8" stroke="#2b2430" stroke-width="3.8"/>
+        <ellipse cx="160" cy="245" rx="20" ry="16" fill="#fff5e8" stroke="#2b2430" stroke-width="3.8"/>
+
+        <!-- しっぽ -->
+        <path d="M65 195 Q28 205 38 238 Q48 256 72 242" fill="none" stroke="#2b2430" stroke-width="14" stroke-linecap="round"/>
+        <path d="M65 195 Q28 205 38 238 Q48 256 72 242" fill="none" stroke="#4f4c55" stroke-width="9" stroke-linecap="round"/>
+
+        <!-- たんこぶ -->
+        <g class="bump">
+          <ellipse cx="180" cy="72" rx="14" ry="16" fill="#ffb0a5" stroke="#2b2430" stroke-width="2.5"/>
+          <path d="M172 66 Q179 61 186 67 M175 78 L182 81" fill="none" stroke="#d86a6e" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M190 58 L195 52 M193 70 L200 69" stroke="#ff6a5e" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- アザ -->
+        <g class="bruise" fill="none" stroke="#b08cc2" stroke-width="5" stroke-linecap="round">
+          <path d="M90 165 L100 160 M103 172 L112 167 M148 165 L158 160 M161 172 L170 167"/>
+        </g>
+
+        <!-- 涙 -->
+        <g class="tear" fill="#6fd0f5" stroke="#2b2430" stroke-width="1.8">
+          <path d="M108 150 Q96 164 108 174 Q120 164 108 150Z"/>
+          <path d="M152 150 Q140 164 152 174 Q164 164 152 150Z"/>
+        </g>
+
+        <!-- ハート -->
+        <g class="heart" fill="#ff6b95" stroke="#2b2430" stroke-width="1.5">
+          <path d="M90 80 C78 68 66 82 90 98 C114 82 102 68 90 80Z"/>
+          <path d="M170 82 C160 72 150 84 170 98 C190 84 180 72 170 82Z"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="hit-text" id="hitText">バシッ！</div>
+    <div class="fist" id="fist">👊</div>
+    <div class="speech" id="speech">……なに？ その顔。</div>
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <div class="meter-label"><span>😾 イライラ</span><span id="irritationText">0 / 100</span></div>
+      <div class="meter"><div class="meter-fill" id="irritation"></div></div>
+      <div class="caption" id="moodCaption">まだ余裕そう。腹立つ。</div>
+      <div style="margin-top:12px" class="meter-label"><span>💗 なかよし度</span><span id="bondText">0 / 100</span></div>
+      <div class="xp-meter"><div class="xp-fill" id="bondMeter"></div></div>
+      <div class="caption">なぐさめると少しずつ回復。</div>
+    </section>
+
+    <section class="panel">
+      <div style="font-weight:1000;font-size:.95rem;margin-bottom:9px">🎮 アクション</div>
+      <div class="actions">
+        <button id="punch">👊 パンチ！</button>
+        <button id="comfort">🫳 なぐさめる</button>
+      </div>
+      <div style="margin-top:10px"><button id="reset">↻ はじめから</button></div>
+    </section>
+
+    <section class="panel">
+      <div class="progress-head"><span>🐾 表情の変化</span><span id="levelText">生意気モード</span></div>
+      <div class="long"><div class="long-fill" id="longFill"></div></div>
+      <div class="levels">
+        <div class="level active" data-stage-card="0"><span>😼</span>生意気</div>
+        <div class="level" data-stage-card="1"><span>😾</span>たんこぶ</div>
+        <div class="level" data-stage-card="2"><span>😠</span>イライラ</div>
+        <div class="level" data-stage-card="3"><span>🥹</span>涙目</div>
+      </div>
+    </section>
+  </aside>
 </div>
-<div class="hit-text" id="hitText">バシッ！</div>
-<div class="fist" id="fist">👊</div>
-<div class="speech" id="speech">……なに？ その顔。</div>
-</section>
-<aside class="side">
-<section class="panel"><div class="meter-label"><span>😾 イライラ</span><span id="irritationText">0 / 100</span></div><div class="meter"><div class="meter-fill" id="irritation"></div></div><div class="caption" id="moodCaption">まだ余裕そう。腹立つ。</div><div style="margin-top:11px" class="meter-label"><span>💗 なかよし度</span><span id="bondText">0 / 100</span></div><div class="xp-meter"><div class="xp-fill" id="bondMeter"></div></div><div class="caption">なぐさめると少しずつ回復。</div></section>
-<section class="panel"><div style="font-weight:1000;font-size:.92rem;margin-bottom:8px">🎮 アクション</div><div class="actions"><button id="punch">👊 パンチ！</button><button id="comfort">🫳 なぐさめる</button></div><div style="margin-top:10px"><button id="reset">↻ はじめから</button></div></section>
-<section class="panel"><div class="progress-head"><span>🐾 表情の変化</span><span id="levelText">生意気モード</span></div><div class="long"><div class="long-fill" id="longFill"></div></div><div class="levels"><div class="level active" data-stage-card="0"><span>😼</span>生意気</div><div class="level" data-stage-card="1"><span>😾</span>たんこぶ</div><div class="level" data-stage-card="2"><span>😠</span>イライラ</div><div class="level" data-stage-card="3"><span>🥹</span>涙目</div></div></section>
-</aside></div>
+
 <p class="note">なぐさめると機嫌が少し戻ることも。※ゲーム内のコミカルな演出です。</p>
 </main>
+
 <script>
-const $=id=>document.getElementById(id);let xp=0,punches=0,bond=0,irritation=0,combo=0,lastAction=0,audioContext;
+const $=id=>document.getElementById(id);
+let xp=0,punches=0,bond=0,irritation=0,combo=0,lastAction=0,audioContext;
+
 const punchLines=["は？ なに見てんの？","その手、しまってくれる？","ぼくの毛並みが乱れるんだけど。","効いてないし？ 全然？","今の、パンチのつもり？","ふーん。やるじゃん。ムカつく。","ぼくの許可取った？","その顔やめて。腹立つ。","あとで絶対おぼえてろよ。","……ちょっとだけ痛い。ちょっとだけ！","ぼくは強い。たぶん。","いまのはノーカン！","爪とぎのほうがまだマシ！","その自信どこから来るの？","にゃ、にゃんだよ！","別に泣いてないし！","目にゴミが入っただけだし！","もう知らない！……ちらっ。","そんなに構ってほしいの？","むすーっ！ もう一回やったら怒るからね！","耳がぺたんこ？ これは仕様です。","ぼくのほうがかわいいし！","……ちょっとだけ、手加減して。","今の見てた？ 見てないよね？","ぷるぷる……怒ってない、怒ってない！"];
 const comfortLines=["……別に、うれしくないし。","そこ、もうちょっと右。","ゴロゴロ……はっ！ 今の聞いた？","今日は特別に許してあげる。","手、あったかいね。ちょっとだけ。","べ、別に甘えてないから。","あと3秒だけなでていいよ。","その手はパンチ以外にも使えるんだ。","……もう一回。今のはよかった。","キミ、たまにはいいやつだね。","喉が鳴ってる？ 気のせい。","ぼくのこと好きすぎじゃない？","ふにゃ……はっ、油断した！","今日だけ隣にいてもいいよ。","さっきのこと？ まだ許してない。でも、なでて。","……すき。い、今のは聞かなかったことにして！","もっとなでてもいいけど？ 特別だからね。","ふわぁ……眠くなってきた。","キミの手、けっこう好きかも。","……ありがと。ちょっと元気出た。"];
-const hitWords=["バシッ！","ポカッ！","ペチン！","ドスッ！","ボフッ！","パシーン！","ぽすっ！","むにっ！"],stages=["生意気モード","たんこぶ発生！","イライラ上昇中","涙目モード"];
-function stageFor(){return xp>=30?3:xp>=15?2:xp>=5?1:0}function pick(a){return a[Math.floor(Math.random()*a.length)]}function say(t){$("speech").textContent=t}
-function sound(kind){try{audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();if(audioContext.state==="suspended")audioContext.resume();const n=audioContext.currentTime,o=audioContext.createOscillator(),g=audioContext.createGain();o.type=kind==="comfort"?"sine":"triangle";o.frequency.setValueAtTime(kind==="comfort"?500:230,n);o.frequency.exponentialRampToValueAtTime(kind==="comfort"?740:90,n+.15);g.gain.setValueAtTime(.0001,n);g.gain.exponentialRampToValueAtTime(kind==="comfort"?.08:.13,n+.015);g.gain.exponentialRampToValueAtTime(.0001,n+.24);o.connect(g);g.connect(audioContext.destination);o.start(n);o.stop(n+.25)}catch(e){}}
-function floatText(t,color){const e=document.createElement("div");e.className="float";e.textContent=t;e.style.left=(30+Math.random()*40)+"%";e.style.top=(35+Math.random()*25)+"%";if(color)e.style.color=color;$("arena").appendChild(e);setTimeout(()=>e.remove(),1050)}
-function animate(c){const e=$("catWrap");e.classList.remove("punched","comforted");void e.offsetWidth;e.classList.add(c)}
-function update(){const s=stageFor();$("score").textContent=punches;$("xp").textContent=xp;$("bond").textContent=bond;$("irritationText").textContent=irritation+" / 100";$("irritation").style.width=irritation+"%";$("bondText").textContent=bond+" / 100";$("bondMeter").style.width=bond+"%";$("moodCaption").textContent=irritation<20?"まだ余裕そう。腹立つ。":irritation<45?"眉間にしわが寄ってきた。":irritation<70?"しっぽがバンバンしている！":"限界っぽい。なぐさめるといいかも。";$("cat").dataset.stage=s;$("levelText").textContent=stages[s];$("longFill").style.width=Math.min(xp/40*100,100)+"%";document.querySelectorAll("[data-stage-card]").forEach(c=>c.classList.toggle("active",Number(c.dataset.stageCard)===s))}
-function punch(){punches++;xp++;irritation=Math.min(100,irritation+(stageFor()===3?2:4));const now=Date.now();combo=now-lastAction<1500?combo+1:1;lastAction=now;$("cat").dataset.mood="normal";$("hitText").textContent=pick(hitWords);$("hitText").classList.remove("show");$("fist").classList.remove("show");void $("hitText").offsetWidth;$("hitText").classList.add("show");$("fist").classList.add("show");animate("punched");say(pick(punchLines));floatText("+1 XP","#ed6459");if(combo>=4)floatText(combo+" COMBO!","#9667c9");if(punches%8===0)say(pick(["ちょっと休憩しない？ ……しないの？","ぼくの顔、さっきより変じゃない？","まだやるの……？ ふーん。","……もう、ばか。"]));if(irritation===100){say("もうやだぁ……ちょっと離れてて！");$("catWrap").style.filter="brightness(0.85) saturate(1.4)";setTimeout(()=>{$("catWrap").style.filter=""},800);floatText("限界！！","#ff3b3b")}update();sound("punch")}
-function comfort(){const before=irritation;bond=Math.min(100,bond+8);irritation=Math.max(0,irritation-12);$("cat").dataset.mood=bond>=70?"happy":"comfort";animate("comforted");say(pick(comfortLines));floatText("+8 なかよし","#e65e99");if(before>0&&irritation===0){say("……もう怒ってない。たぶん。");floatText("ごきげん回復！","#53a9c7")}update();sound("comfort")}
-function reset(){xp=0;punches=0;bond=0;irritation=0;combo=0;lastAction=0;$("speech").textContent="……なに？ その顔。";$("cat").dataset.mood="normal";$("hitText").classList.remove("show");$("fist").classList.remove("show");$("catWrap").style.filter="";update()}
-$("arena").addEventListener("pointerdown",e=>{if(!e.target.closest("button"))punch()});$("punch").addEventListener("click",punch);$("comfort").addEventListener("click",comfort);$("reset").addEventListener("click",reset);update();
-</script></body></html>
+const hitWords=["バシッ！","ポカッ！","ペチン！","ドスッ！","ボフッ！","パシーン！","ぽすっ！","むにっ！"];
+const stages=["生意気モード","たんこぶ発生！","イライラ上昇中","涙目モード"];
+
+function stageFor(){return xp>=30?3:xp>=15?2:xp>=5?1:0}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function say(t){$("speech").textContent=t}
+
+function sound(kind){
+  try{
+    audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();
+    if(audioContext.state==="suspended")audioContext.resume();
+    const n=audioContext.currentTime,o=audioContext.createOscillator(),g=audioContext.createGain();
+    o.type=kind==="comfort"?"sine":"triangle";
+    o.frequency.setValueAtTime(kind==="comfort"?500:230,n);
+    o.frequency.exponentialRampToValueAtTime(kind==="comfort"?740:90,n+.15);
+    g.gain.setValueAtTime(.0001,n);
+    g.gain.exponentialRampToValueAtTime(kind==="comfort"?.08:.13,n+.015);
+    g.gain.exponentialRampToValueAtTime(.0001,n+.24);
+    o.connect(g);g.connect(audioContext.destination);
+    o.start(n);o.stop(n+.25);
+  }catch(e){}
+}
+
+function floatText(t,color){
+  const e=document.createElement("div");
+  e.className="float";
+  e.textContent=t;
+  e.style.left=(30+Math.random()*40)+"%";
+  e.style.top=(35+Math.random()*25)+"%";
+  if(color)e.style.color=color;
+  $("arena").appendChild(e);
+  setTimeout(()=>e.remove(),1000);
+}
+
+function animate(c){
+  const e=$("catWrap");
+  e.classList.remove("punched","comforted");
+  void e.offsetWidth;
+  e.classList.add(c);
+}
+
+function update(){
+  const s=stageFor();
+  $("score").textContent=punches;
+  $("xp").textContent=xp;
+  $("bond").textContent=bond;
+  $("irritationText").textContent=irritation+" / 100";
+  $("irritation").style.width=irritation+"%";
+  $("bondText").textContent=bond+" / 100";
+  $("bondMeter").style.width=bond+"%";
+  $("moodCaption").textContent=irritation<20?"まだ余裕そう。腹立つ。":irritation<45?"眉間にしわが寄ってきた。":irritation<70?"しっぽがバンバンしている！":"限界っぽい。なぐさめるといいかも。";
+  $("cat").dataset.stage=s;
+  $("levelText").textContent=stages[s];
+  $("longFill").style.width=Math.min(xp/40*100,100)+"%";
+  document.querySelectorAll("[data-stage-card]").forEach(c=>c.classList.toggle("active",Number(c.dataset.stageCard)===s));
+}
+
+function punch(){
+  punches++;xp++;
+  irritation=Math.min(100,irritation+(stageFor()===3?2:4));
+  const now=Date.now();
+  combo=now-lastAction<1500?combo+1:1;
+  lastAction=now;
+  $("cat").dataset.mood="normal";
+  $("hitText").textContent=pick(hitWords);
+  $("hitText").classList.remove("show");
+  $("fist").classList.remove("show");
+  void $("hitText").offsetWidth;
+  $("hitText").classList.add("show");
+  $("fist").classList.add("show");
+  animate("punched");
+  say(pick(punchLines));
+  floatText("+1 XP","#ed6459");
+  if(combo>=4)floatText(combo+" COMBO!","#9667c9");
+  if(punches%8===0)say(pick(["ちょっと休憩しない？ ……しないの？","ぼくの顔、さっきより変じゃない？","まだやるの……？ ふーん。","……もう、ばか。"]));
+  if(irritation===100){
+    say("もうやだぁ……ちょっと離れてて！");
+    $("catWrap").style.filter="brightness(0.85) saturate(1.4)";
+    setTimeout(()=>{$("catWrap").style.filter=""},800);
+    floatText("限界！！","#ff3b3b");
+  }
+  update();
+  sound("punch");
+}
+
+function comfort(){
+  const before=irritation;
+  bond=Math.min(100,bond+8);
+  irritation=Math.max(0,irritation-12);
+  $("cat").dataset.mood=bond>=70?"happy":"comfort";
+  animate("comforted");
+  say(pick(comfortLines));
+  floatText("+8 なかよし","#e65e99");
+  if(before>0&&irritation===0){
+    say("……もう怒ってない。たぶん。");
+    floatText("ごきげん回復！","#53a9c7");
+  }
+  update();
+  sound("comfort");
+}
+
+function reset(){
+  xp=0;punches=0;bond=0;irritation=0;combo=0;lastAction=0;
+  $("speech").textContent="……なに？ その顔。";
+  $("cat").dataset.mood="normal";
+  $("hitText").classList.remove("show");
+  $("fist").classList.remove("show");
+  $("catWrap").style.filter="";
+  update();
+}
+
+$("arena").addEventListener("pointerdown",e=>{if(!e.target.closest("button"))punch()});
+$("punch").addEventListener("click",punch);
+$("comfort").addEventListener("click",comfort);
+$("reset").addEventListener("click",reset);
+update();
+</script>
+</body>
+</html>
