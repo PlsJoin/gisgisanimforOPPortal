@@ -5,265 +5,244 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ネコパンチ！</title>
 <style>
-:root {
-  --ink: #29272d;
-  --paper: #fffaf1;
-  --orange: #ffb84d;
-  --pink: #ff9da8;
-  --blue: #a9d8f4;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  color: var(--ink);
-  font-family: "Trebuchet MS", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
-  background:
-    radial-gradient(circle at 12% 15%, #fff 0 2px, transparent 3px),
-    radial-gradient(circle at 88% 24%, #fff 0 3px, transparent 4px),
-    linear-gradient(145deg, #b9e7f7, #fce3c8 55%, #ffd6b8);
-  background-size: 44px 44px, 57px 57px, auto;
-  padding: 20px 14px 34px;
-}
-.game { width: min(900px, 100%); margin: 0 auto; }
-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
-.logo { font-weight:1000; font-size:clamp(1.6rem, 5vw, 2.7rem); letter-spacing:-.06em; line-height:1; text-shadow:3px 3px 0 #fff; }
-.logo span { color:#ff755e; }
-.subtitle { margin-top:7px; font-size:.85rem; font-weight:800; }
-.stats { display:flex; gap:8px; }
-.stat {
-  min-width:92px; padding:10px 14px; border:3px solid var(--ink); border-radius:16px;
-  background:#fffdf8; box-shadow:3px 4px 0 var(--ink); text-align:center;
-}
-.stat small { display:block; font-weight:900; font-size:.72rem; }
-.stat strong { display:block; font-size:1.55rem; line-height:1.15; }
-.arena {
-  position:relative; overflow:hidden; min-height:420px; border:4px solid var(--ink); border-radius:28px;
-  background:linear-gradient(#d9f2ff 0 58%, #f8d9b7 58% 61%, #eebf8e 61%);
-  box-shadow:7px 8px 0 var(--ink);
-  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
-  padding:18px 12px 20px; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-}
-.window { position:absolute; width:145px; height:125px; top:22px; left:7%; border:8px solid #b77c54; border-radius:10px; background:linear-gradient(#8dd9fa 0 70%,#a8d8a0 70%); box-shadow:inset 0 0 0 3px #fff6; }
-.window:before,.window:after { content:""; position:absolute; background:#b77c54; }
-.window:before { width:7px; height:100%; left:50%; }
-.window:after { height:7px; width:100%; top:50%; }
-.plant { position:absolute; right:8%; top:55px; font-size:clamp(2rem, 7vw, 4rem); filter:drop-shadow(2px 3px 0 #ffffff70); }
-.speech { position:absolute; top:24px; right:6%; padding:10px 15px; background:#fffdf8; border:3px solid var(--ink); border-radius:18px; font-weight:1000; transform:rotate(4deg); z-index:2; }
-.speech:after { content:""; position:absolute; left:18px; bottom:-12px; width:16px; height:16px; background:#fffdf8; border-right:3px solid var(--ink); border-bottom:3px solid var(--ink); transform:rotate(45deg); }
-.cat-wrap { position:relative; width:min(330px, 78vw); z-index:1; transform-origin:50% 90%; }
-.cat-wrap.punched { animation: punch .25s ease-out; }
-@keyframes punch { 0%{transform:translateX(0) rotate(0) scale(1)} 25%{transform:translateX(15px) rotate(5deg) scale(.96)} 55%{transform:translateX(-8px) rotate(-3deg) scale(1.03)} 100%{transform:translateX(0) rotate(0) scale(1)} }
-.cat { width:100%; display:block; overflow:visible; filter:drop-shadow(0 7px 0 #b98c6c55); }
-.cat .bump, .cat .tear, .cat .bruise { opacity:0; transition:opacity .2s; }
-.cat[data-stage="1"] .bump { opacity:1; }
-.cat[data-stage="2"] .bump, .cat[data-stage="2"] .bruise { opacity:1; }
-.cat[data-stage="3"] .bump, .cat[data-stage="3"] .bruise, .cat[data-stage="3"] .tear { opacity:1; }
-.cat[data-stage="2"] .brow, .cat[data-stage="3"] .brow { stroke:#49343b; }
-.floor-shadow { position:absolute; bottom:13px; width:290px; height:28px; border-radius:50%; background:#9d6f5050; }
-.hit-text { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) scale(.4) rotate(-12deg); z-index:4; opacity:0; pointer-events:none; color:#ff644f; font-weight:1000; font-size:clamp(2.3rem, 9vw, 4rem); -webkit-text-stroke:2px white; text-shadow:4px 4px 0 var(--ink); }
-.hit-text.show { animation: hit .55s ease-out; }
-@keyframes hit { 0%{opacity:0; transform:translate(-50%,-50%) scale(.3) rotate(-12deg)} 25%{opacity:1; transform:translate(-50%,-50%) scale(1.2) rotate(8deg)} 70%{opacity:1; transform:translate(-50%,-80%) scale(1) rotate(-5deg)} 100%{opacity:0; transform:translate(-50%,-110%) scale(.8)} }
-.fist { position:absolute; z-index:3; right:15%; top:43%; font-size:clamp(2.6rem, 10vw, 5rem); opacity:0; pointer-events:none; }
-.fist.show { animation: fist .32s ease-in-out; }
-@keyframes fist { 0%{opacity:0; transform:translate(60px,-20px) rotate(25deg) scale(.5)} 40%{opacity:1; transform:translate(-40px,10px) rotate(-15deg) scale(1.1)} 100%{opacity:0; transform:translate(-70px,25px) rotate(-20deg) scale(.9)} }
-.hint { margin:14px 0 0; font-weight:900; text-align:center; }
-.progress-card { margin-top:20px; padding:17px; border:3px solid var(--ink); border-radius:22px; background:#fffaf1; box-shadow:5px 6px 0 var(--ink); }
-.progress-head { display:flex; justify-content:space-between; gap:10px; align-items:center; font-weight:1000; }
-.track { height:14px; margin-top:10px; border:2px solid var(--ink); border-radius:20px; background:#e9ded0; overflow:hidden; }
-.fill { height:100%; width:0%; background:linear-gradient(90deg,#ffc34f,#ff8f8f); transition:width .25s; }
-.stages { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
-.stage { text-align:center; padding:9px 4px; border:2px solid #d5c5b6; border-radius:13px; background:#fff; font-size:.8rem; font-weight:900; opacity:.62; }
-.stage.active { border-color:var(--ink); background:#ffe3a7; opacity:1; box-shadow:2px 3px 0 var(--ink); }
-.stage-icon { display:block; font-size:1.5rem; margin-bottom:4px; }
-.actions { display:flex; justify-content:center; gap:10px; margin-top:17px; flex-wrap:wrap; }
-button { border:3px solid var(--ink); border-radius:14px; padding:11px 18px; font:inherit; font-weight:1000; cursor:pointer; box-shadow:3px 4px 0 var(--ink); }
-button:active { transform:translate(2px,3px); box-shadow:1px 1px 0 var(--ink); }
-#reset { background:#fff; color:var(--ink); }
-#punch { background:#ffb84d; color:var(--ink); }
-.note { margin-top:13px; text-align:center; font-size:.75rem; color:#554b4b; }
-@media(max-width:560px) {
-  body{padding:15px 11px 25px}
-  header{align-items:flex-start; flex-direction:column}
-  .stats{width:100%}.stat{flex:1}
-  .arena{min-height:380px}
-  .window{width:105px;height:95px;left:4%;top:20px}
-  .speech{top:20px;right:4%;font-size:.85rem}
-  .stages{gap:5px}.stage{font-size:.68rem;padding:8px 2px}.stage-icon{font-size:1.25rem}
-}
+:root{--ink:#302a35;--cream:#fffaf0;--coral:#ff806f;--yellow:#ffd16a;--pink:#ffc5cd;--blue:#bce7f7;--purple:#b7a0e8}
+*{box-sizing:border-box}
+body{margin:0;padding:18px 13px 36px;color:var(--ink);font-family:"Trebuchet MS","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;background:#f5dfc8;background-image:radial-gradient(#fff8 1.5px,transparent 1.5px),linear-gradient(135deg,#bfe9f8,#fbe4cb 55%,#ffd7cf);background-size:25px 25px,auto}
+button{font:inherit;font-weight:900;border:3px solid var(--ink);border-radius:15px;padding:12px 17px;box-shadow:3px 4px 0 var(--ink);cursor:pointer;transition:transform .08s,box-shadow .08s;touch-action:manipulation}
+button:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--ink)}
+button:focus-visible{outline:4px solid #7ac8e7;outline-offset:3px}
+.game{width:min(980px,100%);margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}
+.logo{font-size:clamp(1.9rem,5vw,3rem);font-weight:1000;letter-spacing:-.07em;line-height:1;text-shadow:3px 3px #fff}
+.logo span{color:#ff6e61}
+.subtitle{font-size:.86rem;font-weight:800;margin-top:8px}
+.stats{display:flex;gap:8px}
+.stat{min-width:86px;padding:9px 12px;text-align:center;border:3px solid var(--ink);border-radius:15px;background:#fffdf8;box-shadow:3px 4px 0 var(--ink)}
+.stat small{display:block;font-size:.7rem;font-weight:900}.stat strong{font-size:1.55rem;line-height:1.2;display:block}
+.main-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(245px,.8fr);gap:17px;align-items:stretch}
+.arena{position:relative;min-height:470px;overflow:hidden;border:4px solid var(--ink);border-radius:27px;background:linear-gradient(#c9efff 0 54%,#fff1d8 54% 57%,#e7b984 57%);box-shadow:6px 7px 0 var(--ink);display:flex;align-items:flex-end;justify-content:center;padding:18px 10px 24px;cursor:pointer;user-select:none;touch-action:manipulation}
+.window{position:absolute;left:7%;top:22px;width:122px;height:112px;border:7px solid #b77c54;border-radius:9px;background:linear-gradient(#8bd9f7 0 72%,#a4d69a 72%);box-shadow:inset 0 0 0 3px #fff7}
+.window:before,.window:after{content:"";position:absolute;background:#b77c54}.window:before{height:100%;width:6px;left:50%}.window:after{width:100%;height:6px;top:50%}
+.plant{position:absolute;left:8%;bottom:100px;font-size:3rem}.shelf{position:absolute;right:0;top:125px;width:72px;height:170px;background:#c28d68;border:4px solid #93664d;border-right:0;border-radius:9px 0 0 9px;display:flex;align-items:center;justify-content:center;font-size:1.7rem}
+.speech{position:absolute;z-index:4;top:25px;right:7%;max-width:58%;padding:10px 13px;background:#fffdf8;border:3px solid var(--ink);border-radius:17px;font-weight:1000;font-size:.92rem;transform:rotate(2deg);text-align:center}
+.speech:after{content:"";position:absolute;left:18px;bottom:-10px;width:14px;height:14px;background:#fffdf8;border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:rotate(45deg)}
+.floor-shadow{position:absolute;bottom:14px;width:65%;height:25px;background:#9d6f5045;border-radius:50%}
+.cat-wrap{position:relative;z-index:2;width:min(340px,88%);transform-origin:50% 90%;transition:filter .2s}
+.cat-wrap.punched{animation:punch .42s cubic-bezier(.2,.9,.3,1)}
+.cat-wrap.comforted{animation:comfort .7s ease}
+@keyframes punch{0%{transform:translate(0) rotate(0) scale(1)}15%{transform:translate(16px,3px) rotate(7deg) scale(.94)}35%{transform:translate(-12px,-3px) rotate(-6deg) scale(1.04)}55%{transform:translate(5px,0) rotate(3deg)}100%{transform:translate(0) rotate(0) scale(1)}}
+@keyframes comfort{0%,100%{transform:translateY(0) scale(1)}35%{transform:translateY(-12px) scale(1.025)}65%{transform:translateY(2px) scale(1)}}
+.cat{display:block;width:100%;overflow:visible;filter:drop-shadow(0 7px 0 #9b725344)}
+.cat .bump,.cat .tear,.cat .bruise,.cat .heart,.cat .star{opacity:0;transition:opacity .25s}
+.cat[data-stage="1"] .bump{opacity:1}.cat[data-stage="2"] .bump,.cat[data-stage="2"] .bruise{opacity:1}.cat[data-stage="3"] .bump,.cat[data-stage="3"] .bruise,.cat[data-stage="3"] .tear{opacity:1}
+.cat[data-mood="comfort"] .heart{opacity:1}.cat[data-mood="happy"] .star{opacity:1}
+.hit-text{position:absolute;z-index:5;left:50%;top:43%;transform:translate(-50%,-50%) scale(.4) rotate(-12deg);opacity:0;pointer-events:none;color:#ff604e;font-weight:1000;font-size:clamp(2.4rem,8vw,4.5rem);-webkit-text-stroke:2px white;text-shadow:4px 4px var(--ink);white-space:nowrap}
+.hit-text.show{animation:hit .75s ease-out}
+@keyframes hit{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-15deg)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(8deg)}58%{opacity:1;transform:translate(-50%,-75%) scale(1) rotate(-4deg)}100%{opacity:0;transform:translate(-50%,-105%) scale(.8)}}
+.fist{position:absolute;z-index:5;right:12%;top:42%;font-size:clamp(3rem,10vw,5.2rem);opacity:0;pointer-events:none}
+.fist.show{animation:fist .45s ease-in-out}
+@keyframes fist{0%{opacity:0;transform:translate(70px,-20px) rotate(25deg) scale(.55)}35%{opacity:1;transform:translate(-45px,10px) rotate(-15deg) scale(1.15)}100%{opacity:0;transform:translate(-75px,25px) rotate(-20deg) scale(.9)}}
+.floating{position:absolute;z-index:6;pointer-events:none;font-weight:1000;font-size:1.2rem;animation:floatUp 1.05s ease-out forwards;text-shadow:2px 2px white}
+@keyframes floatUp{0%{opacity:0;transform:translateY(12px) scale(.7)}20%{opacity:1}100%{opacity:0;transform:translateY(-85px) scale(1.1)}}
+.side{display:flex;flex-direction:column;gap:12px}
+.panel{border:3px solid var(--ink);border-radius:21px;background:var(--cream);padding:15px;box-shadow:4px 5px 0 var(--ink)}
+.panel h2{margin:0 0 9px;font-size:1.02rem}
+.mood-label{display:flex;justify-content:space-between;gap:8px;font-size:.84rem;font-weight:900}
+.meter{height:23px;border:3px solid var(--ink);border-radius:20px;background:#e9ddd1;overflow:hidden;margin-top:9px}
+.meter-fill{height:100%;width:0%;background:repeating-linear-gradient(135deg,#ff9b89 0 12px,#ffb5a8 12px 24px);transition:width .3s}
+.meter-caption{font-size:.75rem;font-weight:800;margin-top:6px;color:#675966}
+.xp-meter{height:12px;border:2px solid var(--ink);border-radius:15px;background:#e9ddd1;overflow:hidden;margin-top:7px}
+.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffe27a,#ffae49);transition:width .3s}
+.action-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#punch{background:#ffb94f}#comfort{background:#ffb7cf}#reset{background:white;width:100%;padding:9px;font-size:.85rem}
+.event{background:#fff1d6}
+.event-title{font-size:.78rem;font-weight:1000;color:#946d37}
+.event-text{font-weight:900;line-height:1.55;min-height:47px;margin-top:5px}
+.log{max-height:150px;overflow:auto;font-size:.78rem;font-weight:800;line-height:1.5}
+.log div{padding:5px 0;border-bottom:1px dashed #d7c7b7}
+.bottom{margin-top:18px;border:3px solid var(--ink);border-radius:22px;background:#fffaf1;padding:15px;box-shadow:4px 5px 0 var(--ink)}
+.progress-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:1000}
+.long-track{height:18px;margin-top:10px;border:2px solid var(--ink);border-radius:20px;background:#e9ded0;overflow:hidden}
+.long-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffcb59,#ff8d8d,#bca2ef);transition:width .35s}
+.milestones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.milestone{text-align:center;padding:9px 3px;border:2px solid #d5c5b6;border-radius:13px;background:#fff;font-size:.78rem;font-weight:900;opacity:.65}
+.milestone.active{border-color:var(--ink);background:#ffe6aa;opacity:1;box-shadow:2px 3px 0 var(--ink)}
+.milestone span{display:block;font-size:1.5rem;margin-bottom:3px}
+.note{text-align:center;font-size:.74rem;color:#66555b;font-weight:700;margin:14px 0 0}
+@media(max-width:720px){header{align-items:flex-start;flex-direction:column}.stats{width:100%}.stat{flex:1}.main-grid{grid-template-columns:1fr}.arena{min-height:400px}.side{display:grid;grid-template-columns:1fr 1fr}.side .panel:first-child{grid-column:1/-1}.shelf{top:140px}.plant{bottom:80px}}
+@media(max-width:420px){body{padding:13px 9px 28px}.arena{min-height:365px}.window{width:85px;height:82px;left:4%;top:17px}.speech{right:4%;top:18px;max-width:60%;font-size:.78rem}.side{grid-template-columns:1fr}.side .panel:first-child{grid-column:auto}.milestones{gap:4px}.milestone{font-size:.68rem}.action-buttons{grid-template-columns:1fr 1fr}button{padding:11px 8px}}
 </style>
 </head>
 <body>
 <main class="game">
-  <header>
-    <div>
-      <div class="logo">ネコ<span>パンチ！</span></div>
-      <div class="subtitle">生意気なアイツに、ワンパンどうぞ。</div>
-    </div>
-    <div class="stats">
-      <div class="stat"><small>パンチ数</small><strong id="score">0</strong></div>
-      <div class="stat"><small>XP</small><strong id="xp">0</strong></div>
-    </div>
-  </header>
+<header>
+  <div><div class="logo">ネコ<span>パンチ！</span></div><div class="subtitle">生意気なネコとの、なんか長い一日。</div></div>
+  <div class="stats"><div class="stat"><small>パンチ数</small><strong id="score">0</strong></div><div class="stat"><small>XP</small><strong id="xp">0</strong></div><div class="stat"><small>なかよし度</small><strong id="bond">0</strong></div></div>
+</header>
 
-  <section class="arena" id="arena" aria-label="猫をタップしてパンチ">
-    <div class="window"></div>
-    <div class="plant">🪴</div>
-    <div class="speech" id="speech">は？ なに見てんの？</div>
-    <div class="floor-shadow"></div>
-    <div class="cat-wrap" id="catWrap">
-      <svg class="cat" id="cat" data-stage="0" viewBox="0 0 320 330" role="img" aria-label="生意気な猫">
-        <ellipse cx="160" cy="305" rx="111" ry="13" fill="#9d6f5030"/>
-        <path d="M79 112 L53 25 Q50 10 68 22 L126 57 Q160 43 194 57 L252 22 Q270 10 267 28 L242 116" fill="#77747a" stroke="#29272d" stroke-width="7" stroke-linejoin="round"/>
-        <path d="M67 39 L104 65 L78 86 Z M253 39 L216 65 L242 86 Z" fill="#ffb1b8"/>
-        <path d="M58 137 Q47 89 94 77 Q160 48 226 77 Q273 89 262 137 L255 253 Q251 298 211 300 L109 300 Q69 298 65 253 Z" fill="#fff4df" stroke="#29272d" stroke-width="7" stroke-linejoin="round"/>
-        <path d="M72 111 Q82 72 125 75 L153 79 L126 123 L88 142 Z M248 111 Q238 72 195 75 L167 79 L194 123 L232 142 Z" fill="#77747a"/>
-        <path d="M86 151 Q108 126 139 149 Q115 162 91 159 Z" fill="#fff" stroke="#29272d" stroke-width="4" stroke-linejoin="round"/>
-        <path d="M181 149 Q212 126 234 151 L229 159 Q204 162 181 149 Z" fill="#fff" stroke="#29272d" stroke-width="4" stroke-linejoin="round"/>
-        <ellipse cx="117" cy="151" rx="7" ry="10" fill="#29272d"/>
-        <ellipse cx="205" cy="151" rx="7" ry="10" fill="#29272d"/>
-        <path class="brow" d="M82 130 L136 143 M185 143 L239 130" fill="none" stroke="#29272d" stroke-width="8" stroke-linecap="round"/>
-        <path d="M151 176 Q160 166 169 176 Q160 188 151 176" fill="#f28d9a" stroke="#29272d" stroke-width="3"/>
-        <path d="M160 187 L160 195 M160 195 Q149 205 141 196 M160 195 Q171 205 179 196" fill="none" stroke="#29272d" stroke-width="3.5" stroke-linecap="round"/>
-        <ellipse cx="91" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/>
-        <ellipse cx="229" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/>
-        <path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#29272d" stroke-width="19" stroke-linecap="round"/>
-        <path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#77747a" stroke-width="12" stroke-linecap="round"/>
-        <path d="M118 273 L118 297 M202 273 L202 297" stroke="#d4c5ad" stroke-width="4" stroke-linecap="round"/>
-        <path class="bruise" d="M91 180 Q105 171 117 181 M203 181 Q215 171 229 180" fill="none" stroke="#a67db3" stroke-width="8" stroke-linecap="round"/>
-        <g class="bump">
-          <ellipse cx="222" cy="83" rx="24" ry="29" fill="#ffb0a3" stroke="#29272d" stroke-width="4"/>
-          <path d="M211 76 Q221 68 231 77 M218 89 L226 94" fill="none" stroke="#d86c70" stroke-width="3" stroke-linecap="round"/>
-        </g>
-        <g class="tear" fill="#79d6ff" stroke="#29272d" stroke-width="2">
-          <path d="M105 166 Q91 184 105 191 Q119 184 105 166Z"/>
-          <path d="M215 166 Q201 184 215 191 Q229 184 215 166Z"/>
-        </g>
-        <g stroke="#29272d" stroke-width="3" stroke-linecap="round">
-          <path d="M73 171 L49 166 M76 180 L52 184 M247 171 L271 166 M244 180 L268 184" fill="none"/>
-        </g>
-      </svg>
-    </div>
-    <div class="hit-text" id="hitText">バシッ！</div>
-    <div class="fist" id="fist">👊</div>
+<div class="main-grid">
+<section class="arena" id="arena" aria-label="猫をタップ">
+  <div class="window"></div><div class="plant">🪴</div><div class="shelf">🧸<br>📚</div>
+  <div class="speech" id="speech">……なに？ その顔。</div><div class="floor-shadow"></div>
+  <div class="cat-wrap" id="catWrap">
+  <svg class="cat" id="cat" data-stage="0" data-mood="normal" viewBox="0 0 320 330" role="img" aria-label="生意気な猫">
+    <path d="M70 115 L48 30 Q45 12 64 24 L126 64 Q160 47 194 64 L256 24 Q275 12 271 32 L249 119" fill="#77747a" stroke="#302a35" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M64 43 L103 69 L77 91 Z M256 43 L217 69 L243 91 Z" fill="#f7aebc"/>
+    <path d="M59 139 Q46 92 96 79 Q160 51 224 79 Q274 92 261 139 L257 253 Q253 299 211 302 L109 302 Q67 299 63 253 Z" fill="#fff3df" stroke="#302a35" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M64 119 Q76 77 123 78 L151 81 L124 126 L86 145 Z M256 119 Q244 77 197 78 L169 81 L196 126 L234 145 Z" fill="#77747a"/>
+    <path d="M81 151 Q105 128 138 149 Q114 163 86 159 Z M182 149 Q215 128 239 151 L234 159 Q206 163 182 149 Z" fill="#fff" stroke="#302a35" stroke-width="4" stroke-linejoin="round"/>
+    <ellipse cx="116" cy="151" rx="7" ry="10" fill="#302a35"/><ellipse cx="207" cy="151" rx="7" ry="10" fill="#302a35"/>
+    <path class="brow" d="M79 130 L137 143 M183 143 L241 130" fill="none" stroke="#302a35" stroke-width="8" stroke-linecap="round"/>
+    <path d="M151 176 Q160 166 169 176 Q160 188 151 176" fill="#f28d9a" stroke="#302a35" stroke-width="3"/>
+    <path d="M160 187 L160 195 M160 195 Q149 205 141 196 M160 195 Q171 205 179 196" fill="none" stroke="#302a35" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="91" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/><ellipse cx="229" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/>
+    <path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#302a35" stroke-width="19" stroke-linecap="round"/><path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#77747a" stroke-width="12" stroke-linecap="round"/>
+    <path d="M118 273 L118 297 M202 273 L202 297" stroke="#d4c5ad" stroke-width="4" stroke-linecap="round"/>
+    <g class="bump"><ellipse cx="222" cy="83" rx="24" ry="29" fill="#ffb0a3" stroke="#302a35" stroke-width="4"/><path d="M211 76 Q221 68 231 77 M218 89 L226 94" fill="none" stroke="#d86c70" stroke-width="3" stroke-linecap="round"/></g>
+    <g class="bruise" fill="none" stroke="#b28cc6" stroke-width="7" stroke-linecap="round"><path d="M85 181 L97 174 M102 185 L113 178 M207 180 L219 174 M222 185 L233 178"/></g>
+    <g class="tear" fill="#79d6ff" stroke="#302a35" stroke-width="2"><path d="M105 166 Q91 184 105 191 Q119 184 105 166Z"/><path d="M215 166 Q201 184 215 191 Q229 184 215 166Z"/></g>
+    <g class="heart" fill="#ff6f9d" stroke="#302a35" stroke-width="2"><path d="M90 83 C73 66 54 85 90 109 C126 85 107 66 90 83Z"/><path d="M239 90 C228 79 216 91 239 108 C262 91 250 79 239 90Z"/></g>
+    <g class="star" fill="#ffd45c" stroke="#302a35" stroke-width="2"><path d="M83 96 L89 110 L104 111 L93 121 L96 136 L83 128 L70 136 L73 121 L62 111 L77 110Z"/><path d="M244 120 L249 131 L261 132 L252 140 L255 152 L244 146 L233 152 L236 140 L227 132 L239 131Z"/></g>
+    <g stroke="#302a35" stroke-width="3" stroke-linecap="round"><path d="M73 171 L49 166 M76 180 L52 184 M247 171 L271 166 M244 180 L268 184" fill="none"/></g>
+  </svg></div>
+  <div class="hit-text" id="hitText">バシッ！</div><div class="fist" id="fist">👊</div>
+</section>
+
+<aside class="side">
+  <section class="panel">
+    <div class="mood-label"><span>😾 猫のイライラ</span><span id="irritationText">0 / 100</span></div>
+    <div class="meter"><div class="meter-fill" id="irritation"></div></div>
+    <div class="meter-caption" id="moodCaption">まだ余裕そう。腹立つ。</div>
+    <div style="margin-top:15px" class="mood-label"><span>💗 なかよしゲージ</span><span id="bondText">0 / 100</span></div>
+    <div class="xp-meter"><div class="xp-fill" id="bondMeter"></div></div>
+    <div class="meter-caption">「なぐさめる」で少しずつ回復。</div>
   </section>
-
-  <p class="hint" id="hint">猫をタップしてパンチ！　1パンチ = 1 XP</p>
-
-  <section class="progress-card">
-    <div class="progress-head"><span>🐾 猫のメンタル（？）</span><span id="levelText">生意気度 MAX</span></div>
-    <div class="track"><div class="fill" id="fill"></div></div>
-    <div class="stages">
-      <div class="stage active" data-stage-card="0"><span class="stage-icon">😼</span>生意気</div>
-      <div class="stage" data-stage-card="1"><span class="stage-icon">😾</span>たんこぶ</div>
-      <div class="stage" data-stage-card="2"><span class="stage-icon">😿</span>イライラ</div>
-      <div class="stage" data-stage-card="3"><span class="stage-icon">😭</span>泣きそう</div>
-    </div>
+  <section class="panel">
+    <h2>🎮 アクション</h2>
+    <div class="action-buttons"><button id="punch">👊 パンチ！</button><button id="comfort">🫳 なぐさめる</button></div>
+    <div style="margin-top:13px"><button id="reset">↻ はじめから</button></div>
   </section>
+  <section class="panel event">
+    <div class="event-title" id="eventTitle">TODAY'S EVENT</div>
+    <div class="event-text" id="eventText">猫はあなたを見ている。たぶん見下している。</div>
+  </section>
+  <section class="panel">
+    <h2>💬 猫のひとことログ</h2>
+    <div class="log" id="log"><div>😼「……で？」</div><div>🐾 猫との一日が始まった。</div></div>
+  </section>
+</aside>
+</div>
 
-  <div class="actions">
-    <button id="punch" type="button">👊 パンチ！</button>
-    <button id="reset" type="button">↻ 最初から</button>
+<section class="bottom">
+  <div class="progress-head"><span>🐾 猫のごきげん進行度</span><span id="levelText">生意気モード</span></div>
+  <div class="long-track"><div class="long-fill" id="longFill"></div></div>
+  <div class="milestones">
+    <div class="milestone active" data-stage-card="0"><span>😼</span>生意気</div>
+    <div class="milestone" data-stage-card="1"><span>😾</span>たんこぶ</div>
+    <div class="milestone" data-stage-card="2"><span>😿</span>イライラ</div>
+    <div class="milestone" data-stage-card="3"><span>🥹</span>泣きそう</div>
   </div>
-  <div class="note">※ゲーム内のコミカルな演出です。現実の猫にはやさしくね。</div>
+</section>
+<p class="note">ゲーム内のコミカルな演出です。猫の機嫌は、なぐさめると少し戻ることもあります。</p>
 </main>
 
 <script>
-const $ = (id) => document.getElementById(id);
-let xp = 0;
-let combo = 0;
-let lastPunch = 0;
-let audioContext;
-
-const speechByStage = [
-  "は？ なに見てんの？",
-  "いっっった！ 何すんの！",
-  "ちょっと！ いい加減にして！",
-  "も、もうやめてよぉ…"
+const $ = id => document.getElementById(id);
+let xp=0, punches=0, bond=0, irritation=0, combo=0, lastAction=0, eventCount=0, audioContext;
+let lastLine="";
+const punchLines=[
+"は？ なに見てんの？","その手、しまってくれる？","ぼくの毛並みが乱れるんだけど。","効いてないし？ 全然？","今の、パンチのつもり？","ふーん。やるじゃん。ムカつく。","飼い主ポイント下がったわ。","ぼくの許可取った？","その顔やめて。腹立つ。","あとで絶対おぼえてろよ。","……ちょっとだけ痛い。ちょっとだけ！","ぼくは強い。たぶん。","いまのはノーカン！","爪とぎのほうがまだマシ！","その自信どこから来るの？","にゃ、にゃんだよ！","別に泣いてないし！","目にゴミが入っただけだし！","もう知らない！……ちらっ。","そんなに構ってほしいの？"
 ];
-const hitWords = ["バシッ！", "ポカッ！", "ドスッ！", "ペチン！", "ボコッ！"];
-
-function stageFor(value) {
-  if (value >= 20) return 3;
-  if (value >= 10) return 2;
-  if (value >= 4) return 1;
-  return 0;
+const comfortLines=[
+"……別に、うれしくないし。","そこ、もうちょっと右。","ゴロゴロ……はっ！ 今の聞いた？","今日は特別に許してあげる。","手、あったかいね。ちょっとだけ。","べ、別に甘えてないから。","あと3秒だけなでていいよ。","その手はパンチ以外にも使えるんだ。","……もう一回。今のはよかった。","キミ、たまにはいいやつだね。","喉が鳴ってる？ 気のせい。","ぼくのこと好きすぎじゃない？","ふにゃ……はっ、油断した！","今日だけ隣にいてもいいよ。","さっきのこと？ まだ許してない。でも、なでて。"
+];
+const eventList=[
+["📦 箱を発見！","猫が箱に入った。顔だけ出してドヤ顔。"],
+["🪶 羽のおもちゃ","猫はおもちゃを追いかけた。あなたのことは無視。"],
+["🥛 おやつ休憩","おやつを見た瞬間だけ、世界一かわいい顔になった。"],
+["🧶 毛糸がからまる","猫が毛糸にからまった。助けたら「自分でできたし」と言った。"],
+["🪟 窓辺パトロール","外の鳥に向かって小さく「ｶｶｶｯ」。見られたら真顔。"],
+["🛏️ お昼寝","猫は寝た。あなたのキーボードの上で。"],
+["👑 王様タイム","猫は部屋の真ん中で王様みたいに座っている。"],
+["🐾 謎のダッシュ","突然ダッシュして壁の前で止まった。何がしたかったのかは不明。"],
+["🧸 お気に入り","古いぬいぐるみを抱えている。見ていたら隠された。"],
+["🎁 プレゼント？","猫が何かを持ってきた。おもちゃのネズミだった。ちょっと誇らしげ。"],
+["🌧️ 雨の日","外に出られなくて不機嫌。いつもより3割増しで生意気。"],
+["✨ ひみつの一面","誰も見ていないと思って、肉球をなめている。目が合った。"]
+];
+const stageWords=["生意気モード","たんこぶ発生！","イライラ上昇中","涙目モード"];
+const hitWords=["バシッ！","ポカッ！","ペチン！","ドスッ！","ボフッ！","パシーン！","ぽすっ！"];
+function stageFor(){return xp>=30?3:xp>=15?2:xp>=5?1:0}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function log(message){const el=document.createElement("div");el.textContent=message;$("log").prepend(el);while($("log").children.length>9)$("log").lastChild.remove()}
+function say(message){$("speech").textContent=message;log("😼「"+message+"」")}
+function sound(kind){
+ try{
+  audioContext=audioContext||new(window.AudioContext||window.webkitAudioContext)();
+  if(audioContext.state==="suspended")audioContext.resume();
+  const now=audioContext.currentTime,osc=audioContext.createOscillator(),gain=audioContext.createGain();
+  osc.type=kind==="comfort"?"sine":"triangle";
+  osc.frequency.setValueAtTime(kind==="comfort"?520:220,now);
+  osc.frequency.exponentialRampToValueAtTime(kind==="comfort"?760:85,now+.13);
+  gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(kind==="comfort"?.09:.14,now+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+.22);
+  osc.connect(gain);gain.connect(audioContext.destination);osc.start(now);osc.stop(now+.23);
+ }catch(e){}
 }
-
-function playSound() {
-  try {
-    audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-    if (audioContext.state === "suspended") audioContext.resume();
-    const now = audioContext.currentTime;
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(220, now);
-    oscillator.frequency.exponentialRampToValueAtTime(95, now + 0.09);
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 0.14);
-  } catch (error) {}
+function floatText(text, color){
+ const el=document.createElement("div");el.className="floating";el.textContent=text;el.style.left=(30+Math.random()*40)+"%";el.style.top=(35+Math.random()*25)+"%";if(color)el.style.color=color;$("arena").appendChild(el);setTimeout(()=>el.remove(),1100)
 }
-
-function punch() {
-  xp += 1;
-  const now = Date.now();
-  combo = now - lastPunch < 1300 ? combo + 1 : 1;
-  lastPunch = now;
-  const stage = stageFor(xp);
-
-  $("score").textContent = xp;
-  $("xp").textContent = xp;
-  $("cat").dataset.stage = stage;
-  $("speech").textContent = speechByStage[stage];
-  $("hitText").textContent = hitWords[Math.floor(Math.random() * hitWords.length)];
-  $("hitText").classList.remove("show");
-  $("fist").classList.remove("show");
-  $("catWrap").classList.remove("punched");
-  void $("catWrap").offsetWidth;
-  $("catWrap").classList.add("punched");
-  $("hitText").classList.add("show");
-  $("fist").classList.add("show");
-  $("fill").style.width = Math.min(xp / 20 * 100, 100) + "%";
-  $("levelText").textContent = ["生意気度 MAX", "たんこぶ発生中", "怒りゲージ上昇", "涙目モード"][stage];
-  $("hint").textContent = combo >= 3 ? `🔥 ${combo}コンボ！　+1 XP` : "1パンチ = 1 XP";
-  document.querySelectorAll("[data-stage-card]").forEach(card => {
-    card.classList.toggle("active", Number(card.dataset.stageCard) === stage);
-  });
-  if (xp >= 20 && xp % 10 === 0) $("speech").textContent = "うぅ…もう無理ぃ…";
-  playSound();
+function animate(className){
+ const el=$("catWrap");el.classList.remove("punched","comforted");void el.offsetWidth;el.classList.add(className);
 }
-
-function resetGame() {
-  xp = 0;
-  combo = 0;
-  lastPunch = 0;
-  $("score").textContent = "0";
-  $("xp").textContent = "0";
-  $("cat").dataset.stage = "0";
-  $("speech").textContent = speechByStage[0];
-  $("fill").style.width = "0%";
-  $("levelText").textContent = "生意気度 MAX";
-  $("hint").textContent = "猫をタップしてパンチ！　1パンチ = 1 XP";
-  $("hitText").classList.remove("show");
-  $("fist").classList.remove("show");
-  $("catWrap").classList.remove("punched");
-  document.querySelectorAll("[data-stage-card]").forEach(card => {
-    card.classList.toggle("active", Number(card.dataset.stageCard) === 0);
-  });
+function update(){
+ const stage=stageFor();
+ $("score").textContent=punches;$("xp").textContent=xp;$("bond").textContent=bond;
+ $("irritationText").textContent=irritation+" / 100";$("irritation").style.width=irritation+"%";
+ $("bondText").textContent=bond+" / 100";$("bondMeter").style.width=bond+"%";
+ $("moodCaption").textContent=irritation<20?"まだ余裕そう。腹立つ。":irritation<45?"眉間にしわが寄ってきた。":irritation<70?"しっぽがバンバンしている！":"限界っぽい。ちょっと休もう。";
+ $("cat").dataset.stage=stage;$("levelText").textContent=stageWords[stage];
+ $("longFill").style.width=Math.min(xp/40*100,100)+"%";
+ document.querySelectorAll("[data-stage-card]").forEach(c=>c.classList.toggle("active",Number(c.dataset.stageCard)===stage));
 }
-$("arena").addEventListener("pointerdown", punch);
-$("punch").addEventListener("click", punch);
-$("reset").addEventListener("click", (event) => {
-  event.stopPropagation();
-  resetGame();
-});
+function triggerEvent(){
+ eventCount++;
+ const event=pick(eventList);
+ $("eventTitle").textContent="EVENT "+String(eventCount).padStart(2,"0")+" · "+event[0];
+ $("eventText").textContent=event[1];
+ log("🎲 イベント："+event[0]);
+}
+function punch(){
+ punches++;xp++;irritation=Math.min(100,irritation+ (stageFor()===3?2:4));
+ const now=Date.now();combo=now-lastAction<1500?combo+1:1;lastAction=now;
+ const stage=stageFor();$("cat").dataset.mood="normal";
+ $("hitText").textContent=pick(hitWords);$("hitText").classList.remove("show");$("fist").classList.remove("show");
+ void $("hitText").offsetWidth;$("hitText").classList.add("show");$("fist").classList.add("show");animate("punched");
+ say(pick(punchLines));
+ floatText("+1 XP","#ed6459");
+ if(combo>=4){floatText(combo+" COMBO!","#9667c9");log("🔥 "+combo+"コンボ！")}
+ if(punches%5===0){triggerEvent();if(stage===0)say("調子に乗らないでよね！")}
+ if(punches%10===0){say(pick(["ちょっと休憩しない？ ……しないの？","ぼくの顔、さっきより変じゃない？","まだやるの……？ ふーん。"]))}
+ if(irritation===100){$("eventTitle").textContent="⚠ ねこの限界";$("eventText").textContent="猫はクッションの裏に避難した。なぐさめると戻ってくるかも。";say("もうやだぁ……ちょっと離れてて！");floatText("限界！","#8b6ad2")}
+ update();sound("punch");
+}
+function comfort(){
+ const amount=Math.min(100,irritation);bond=Math.min(100,bond+8);irritation=Math.max(0,irritation-12);
+ $("cat").dataset.mood="comfort";animate("comforted");say(pick(comfortLines));floatText("+8 なかよし","#e65e99");sound("comfort");
+ if(bond>=25&&bond<40){$("eventTitle").textContent="💗 ちょっと信頼";$("eventText").textContent="猫が少しだけ近くに座った。たまたまらしい。"}
+ if(bond>=40&&bond<70){$("eventTitle").textContent="💕 なかよし";$("eventText").textContent="猫が自分から頭をこすりつけてきた。すぐ平静を装った。"}
+ if(bond>=70){$("eventTitle").textContent="🌟 信頼度 MAX";$("eventText").textContent="猫が膝の上で丸くなった。もう完全にお気に入り。";$("cat").dataset.mood="happy"}
+ if(amount>0&&irritation===0){say("……もう怒ってない。たぶん。");floatText("ごきげん回復！","#53a9c7")}
+ update();
+}
+function reset(){
+ xp=0;punches=0;bond=0;irritation=0;combo=0;lastAction=0;eventCount=0;
+ $("eventTitle").textContent="TODAY'S EVENT";$("eventText").textContent="猫はあなたを見ている。たぶん見下している。";
+ $("speech").textContent="……なに？ その顔。";$("cat").dataset.mood="normal";$("hitText").classList.remove("show");$("fist").classList.remove("show");
+ $("log").innerHTML="<div>😼「……で？」</div><div>🐾 猫との一日が始まった。</div>";update();
+}
+$("arena").addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;punch()});
+$("punch").addEventListener("click",punch);$("comfort").addEventListener("click",comfort);$("reset").addEventListener("click",reset);
+update();
 </script>
 </body>
 </html>
