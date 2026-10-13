@@ -1,377 +1,269 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#ffffff">
-  <title>YORIMICHI</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    :root {
-      --bg: #f8f9fb;
-      --surface: #fff;
-      --text: #111;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --accent: #2563eb;
-      --soft: #eff6ff;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-    button, input, select { font: inherit; border: none; background: none; outline: none; }
-    button { cursor: pointer; }
-
-    .app { height: 100%; position: relative; }
-    #map { width: 100%; height: 100%; }
-
-    /* 検索バー */
-    .bar {
-      position: absolute; top: 12px; left: 12px; right: 12px; z-index: 1000;
-      max-width: 420px; margin: 0 auto;
-      background: var(--surface); border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden;
-    }
-    .bar-row {
-      display: flex; align-items: center; gap: 6px; padding: 8px 10px;
-    }
-    .bar-row input {
-      flex: 1; height: 38px; font-size: 15px; background: transparent;
-    }
-    .bar-row input::placeholder { color: #9ca3af; }
-    .btn-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      display: grid; place-items: center; color: var(--muted); font-size: 17px;
-    }
-    .btn-icon:active { background: var(--bg); }
-    .btn-search {
-      height: 38px; padding: 0 14px; border-radius: 10px;
-      background: var(--accent); color: #fff; font-weight: 700; font-size: 14px;
-    }
-    .btn-search:disabled { opacity: .5; }
-
-    .cats {
-      display: flex; gap: 6px; padding: 0 10px 10px; overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .cat {
-      flex-shrink: 0; height: 32px; padding: 0 12px; border-radius: 999px;
-      border: 1px solid var(--line); font-size: 13px; color: var(--muted);
-      background: var(--surface);
-    }
-    .cat.active {
-      background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 700;
-    }
-
-    /* 結果シート */
-    .sheet {
-      position: absolute; left: 0; right: 0; bottom: 0; z-index: 900;
-      background: var(--surface); border-radius: 20px 20px 0 0;
-      box-shadow: 0 -6px 30px rgba(0,0,0,.08);
-      max-height: 46vh; display: flex; flex-direction: column;
-      transform: translateY(calc(100% - 52px));
-      transition: transform .25s ease;
-    }
-    .sheet.open { transform: translateY(0); }
-    .handle {
-      width: 36px; height: 4px; background: #d1d5db; border-radius: 2px;
-      margin: 10px auto 4px;
-    }
-    .sheet-head {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 4px 16px 10px; font-size: 14px;
-    }
-    .sheet-head b { font-weight: 700; }
-    .sheet-head span { color: var(--muted); font-size: 13px; cursor: pointer; }
-    .list {
-      flex: 1; overflow-y: auto; padding: 0 10px 24px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .card {
-      display: flex; gap: 12px; padding: 12px; border-radius: 14px;
-      cursor: pointer; transition: background .12s;
-    }
-    .card:active, .card.on { background: var(--bg); }
-    .card-icon {
-      width: 42px; height: 42px; border-radius: 12px; background: var(--soft);
-      display: grid; place-items: center; font-size: 18px; flex-shrink: 0;
-    }
-    .card-body { flex: 1; min-width: 0; }
-    .card-name {
-      font-size: 15px; font-weight: 700;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .card-addr {
-      font-size: 12px; color: var(--muted); margin-top: 2px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .empty {
-      padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6;
-    }
-
-    /* マーカー */
-    .pin {
-      width: 34px; height: 34px; background: var(--accent); color: #fff;
-      border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
-      display: flex; align-items: center; justify-content: center;
-      border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3);
-    }
-    .pin span { transform: rotate(45deg); font-size: 13px; }
-
-    .leaflet-control-zoom {
-      border: none !important; border-radius: 10px !important;
-      box-shadow: 0 2px 10px rgba(0,0,0,.12) !important; overflow: hidden;
-    }
-    .leaflet-control-zoom a {
-      width: 34px !important; height: 34px !important; line-height: 34px !important;
-      color: var(--text) !important;
-    }
-    .leaflet-popup-content-wrapper { border-radius: 12px; }
-    .leaflet-popup-content { margin: 10px 12px; font-size: 13px; }
-    .leaflet-popup-content b { display: block; font-size: 14px; margin-bottom: 2px; }
-
-    .src {
-      position: absolute; bottom: 56px; left: 8px; z-index: 400;
-      font-size: 10px; color: #666; background: rgba(255,255,255,.9);
-      padding: 2px 6px; border-radius: 4px;
-    }
-
-    @media (min-width: 720px) {
-      .bar { left: 20px; right: auto; width: 380px; }
-      .sheet {
-        left: 20px; right: auto; width: 380px; bottom: 20px;
-        max-height: 52vh; border-radius: 16px; transform: none;
-      }
-      .handle { display: none; }
-      .src { bottom: 12px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ネコパンチ！</title>
+<style>
+:root {
+  --ink: #29272d;
+  --paper: #fffaf1;
+  --orange: #ffb84d;
+  --pink: #ff9da8;
+  --blue: #a9d8f4;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  background:
+    radial-gradient(circle at 12% 15%, #fff 0 2px, transparent 3px),
+    radial-gradient(circle at 88% 24%, #fff 0 3px, transparent 4px),
+    linear-gradient(145deg, #b9e7f7, #fce3c8 55%, #ffd6b8);
+  background-size: 44px 44px, 57px 57px, auto;
+  padding: 20px 14px 34px;
+}
+.game { width: min(900px, 100%); margin: 0 auto; }
+header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.logo { font-weight:1000; font-size:clamp(1.6rem, 5vw, 2.7rem); letter-spacing:-.06em; line-height:1; text-shadow:3px 3px 0 #fff; }
+.logo span { color:#ff755e; }
+.subtitle { margin-top:7px; font-size:.85rem; font-weight:800; }
+.stats { display:flex; gap:8px; }
+.stat {
+  min-width:92px; padding:10px 14px; border:3px solid var(--ink); border-radius:16px;
+  background:#fffdf8; box-shadow:3px 4px 0 var(--ink); text-align:center;
+}
+.stat small { display:block; font-weight:900; font-size:.72rem; }
+.stat strong { display:block; font-size:1.55rem; line-height:1.15; }
+.arena {
+  position:relative; overflow:hidden; min-height:420px; border:4px solid var(--ink); border-radius:28px;
+  background:linear-gradient(#d9f2ff 0 58%, #f8d9b7 58% 61%, #eebf8e 61%);
+  box-shadow:7px 8px 0 var(--ink);
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  padding:18px 12px 20px; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.window { position:absolute; width:145px; height:125px; top:22px; left:7%; border:8px solid #b77c54; border-radius:10px; background:linear-gradient(#8dd9fa 0 70%,#a8d8a0 70%); box-shadow:inset 0 0 0 3px #fff6; }
+.window:before,.window:after { content:""; position:absolute; background:#b77c54; }
+.window:before { width:7px; height:100%; left:50%; }
+.window:after { height:7px; width:100%; top:50%; }
+.plant { position:absolute; right:8%; top:55px; font-size:clamp(2rem, 7vw, 4rem); filter:drop-shadow(2px 3px 0 #ffffff70); }
+.speech { position:absolute; top:24px; right:6%; padding:10px 15px; background:#fffdf8; border:3px solid var(--ink); border-radius:18px; font-weight:1000; transform:rotate(4deg); z-index:2; }
+.speech:after { content:""; position:absolute; left:18px; bottom:-12px; width:16px; height:16px; background:#fffdf8; border-right:3px solid var(--ink); border-bottom:3px solid var(--ink); transform:rotate(45deg); }
+.cat-wrap { position:relative; width:min(330px, 78vw); z-index:1; transform-origin:50% 90%; }
+.cat-wrap.punched { animation: punch .25s ease-out; }
+@keyframes punch { 0%{transform:translateX(0) rotate(0) scale(1)} 25%{transform:translateX(15px) rotate(5deg) scale(.96)} 55%{transform:translateX(-8px) rotate(-3deg) scale(1.03)} 100%{transform:translateX(0) rotate(0) scale(1)} }
+.cat { width:100%; display:block; overflow:visible; filter:drop-shadow(0 7px 0 #b98c6c55); }
+.cat .bump, .cat .tear, .cat .bruise { opacity:0; transition:opacity .2s; }
+.cat[data-stage="1"] .bump { opacity:1; }
+.cat[data-stage="2"] .bump, .cat[data-stage="2"] .bruise { opacity:1; }
+.cat[data-stage="3"] .bump, .cat[data-stage="3"] .bruise, .cat[data-stage="3"] .tear { opacity:1; }
+.cat[data-stage="2"] .brow, .cat[data-stage="3"] .brow { stroke:#49343b; }
+.floor-shadow { position:absolute; bottom:13px; width:290px; height:28px; border-radius:50%; background:#9d6f5050; }
+.hit-text { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%) scale(.4) rotate(-12deg); z-index:4; opacity:0; pointer-events:none; color:#ff644f; font-weight:1000; font-size:clamp(2.3rem, 9vw, 4rem); -webkit-text-stroke:2px white; text-shadow:4px 4px 0 var(--ink); }
+.hit-text.show { animation: hit .55s ease-out; }
+@keyframes hit { 0%{opacity:0; transform:translate(-50%,-50%) scale(.3) rotate(-12deg)} 25%{opacity:1; transform:translate(-50%,-50%) scale(1.2) rotate(8deg)} 70%{opacity:1; transform:translate(-50%,-80%) scale(1) rotate(-5deg)} 100%{opacity:0; transform:translate(-50%,-110%) scale(.8)} }
+.fist { position:absolute; z-index:3; right:15%; top:43%; font-size:clamp(2.6rem, 10vw, 5rem); opacity:0; pointer-events:none; }
+.fist.show { animation: fist .32s ease-in-out; }
+@keyframes fist { 0%{opacity:0; transform:translate(60px,-20px) rotate(25deg) scale(.5)} 40%{opacity:1; transform:translate(-40px,10px) rotate(-15deg) scale(1.1)} 100%{opacity:0; transform:translate(-70px,25px) rotate(-20deg) scale(.9)} }
+.hint { margin:14px 0 0; font-weight:900; text-align:center; }
+.progress-card { margin-top:20px; padding:17px; border:3px solid var(--ink); border-radius:22px; background:#fffaf1; box-shadow:5px 6px 0 var(--ink); }
+.progress-head { display:flex; justify-content:space-between; gap:10px; align-items:center; font-weight:1000; }
+.track { height:14px; margin-top:10px; border:2px solid var(--ink); border-radius:20px; background:#e9ded0; overflow:hidden; }
+.fill { height:100%; width:0%; background:linear-gradient(90deg,#ffc34f,#ff8f8f); transition:width .25s; }
+.stages { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:14px; }
+.stage { text-align:center; padding:9px 4px; border:2px solid #d5c5b6; border-radius:13px; background:#fff; font-size:.8rem; font-weight:900; opacity:.62; }
+.stage.active { border-color:var(--ink); background:#ffe3a7; opacity:1; box-shadow:2px 3px 0 var(--ink); }
+.stage-icon { display:block; font-size:1.5rem; margin-bottom:4px; }
+.actions { display:flex; justify-content:center; gap:10px; margin-top:17px; flex-wrap:wrap; }
+button { border:3px solid var(--ink); border-radius:14px; padding:11px 18px; font:inherit; font-weight:1000; cursor:pointer; box-shadow:3px 4px 0 var(--ink); }
+button:active { transform:translate(2px,3px); box-shadow:1px 1px 0 var(--ink); }
+#reset { background:#fff; color:var(--ink); }
+#punch { background:#ffb84d; color:var(--ink); }
+.note { margin-top:13px; text-align:center; font-size:.75rem; color:#554b4b; }
+@media(max-width:560px) {
+  body{padding:15px 11px 25px}
+  header{align-items:flex-start; flex-direction:column}
+  .stats{width:100%}.stat{flex:1}
+  .arena{min-height:380px}
+  .window{width:105px;height:95px;left:4%;top:20px}
+  .speech{top:20px;right:4%;font-size:.85rem}
+  .stages{gap:5px}.stage{font-size:.68rem;padding:8px 2px}.stage-icon{font-size:1.25rem}
+}
+</style>
 </head>
 <body>
-  <div class="app">
-    <div id="map"></div>
-    <div class="src">OpenPOI / Overture Maps / 食品営業許可オープンデータ</div>
-
-    <div class="bar">
-      <div class="bar-row">
-        <button class="btn-icon" id="locBtn" title="現在地">📍</button>
-        <input id="q" type="text" placeholder="駅・地名（例：渋谷）" autocomplete="off">
-        <button class="btn-search" id="go">探す</button>
-      </div>
-      <div class="cats" id="cats">
-        <button class="cat active" data-q="カフェ">カフェ</button>
-        <button class="cat" data-q="レストラン 食堂">飲食</button>
-        <button class="cat" data-q="コンビニ">コンビニ</button>
-        <button class="cat" data-q="公園">公園</button>
-        <button class="cat" data-q="書店 本屋">本屋</button>
-        <button class="cat" data-q="">なんでも</button>
-      </div>
+<main class="game">
+  <header>
+    <div>
+      <div class="logo">ネコ<span>パンチ！</span></div>
+      <div class="subtitle">生意気なアイツに、ワンパンどうぞ。</div>
     </div>
-
-    <div class="sheet" id="sheet">
-      <div class="handle"></div>
-      <div class="sheet-head">
-        <b id="count">場所を入れて探してください</b>
-        <span id="clear">クリア</span>
-      </div>
-      <div class="list" id="list">
-        <div class="empty">駅名や地名を入れて「探す」を押してください</div>
-      </div>
+    <div class="stats">
+      <div class="stat"><small>パンチ数</small><strong id="score">0</strong></div>
+      <div class="stat"><small>XP</small><strong id="xp">0</strong></div>
     </div>
+  </header>
+
+  <section class="arena" id="arena" aria-label="猫をタップしてパンチ">
+    <div class="window"></div>
+    <div class="plant">🪴</div>
+    <div class="speech" id="speech">は？ なに見てんの？</div>
+    <div class="floor-shadow"></div>
+    <div class="cat-wrap" id="catWrap">
+      <svg class="cat" id="cat" data-stage="0" viewBox="0 0 320 330" role="img" aria-label="生意気な猫">
+        <ellipse cx="160" cy="305" rx="111" ry="13" fill="#9d6f5030"/>
+        <path d="M79 112 L53 25 Q50 10 68 22 L126 57 Q160 43 194 57 L252 22 Q270 10 267 28 L242 116" fill="#77747a" stroke="#29272d" stroke-width="7" stroke-linejoin="round"/>
+        <path d="M67 39 L104 65 L78 86 Z M253 39 L216 65 L242 86 Z" fill="#ffb1b8"/>
+        <path d="M58 137 Q47 89 94 77 Q160 48 226 77 Q273 89 262 137 L255 253 Q251 298 211 300 L109 300 Q69 298 65 253 Z" fill="#fff4df" stroke="#29272d" stroke-width="7" stroke-linejoin="round"/>
+        <path d="M72 111 Q82 72 125 75 L153 79 L126 123 L88 142 Z M248 111 Q238 72 195 75 L167 79 L194 123 L232 142 Z" fill="#77747a"/>
+        <path d="M86 151 Q108 126 139 149 Q115 162 91 159 Z" fill="#fff" stroke="#29272d" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M181 149 Q212 126 234 151 L229 159 Q204 162 181 149 Z" fill="#fff" stroke="#29272d" stroke-width="4" stroke-linejoin="round"/>
+        <ellipse cx="117" cy="151" rx="7" ry="10" fill="#29272d"/>
+        <ellipse cx="205" cy="151" rx="7" ry="10" fill="#29272d"/>
+        <path class="brow" d="M82 130 L136 143 M185 143 L239 130" fill="none" stroke="#29272d" stroke-width="8" stroke-linecap="round"/>
+        <path d="M151 176 Q160 166 169 176 Q160 188 151 176" fill="#f28d9a" stroke="#29272d" stroke-width="3"/>
+        <path d="M160 187 L160 195 M160 195 Q149 205 141 196 M160 195 Q171 205 179 196" fill="none" stroke="#29272d" stroke-width="3.5" stroke-linecap="round"/>
+        <ellipse cx="91" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/>
+        <ellipse cx="229" cy="184" rx="18" ry="9" fill="#ffb5ad" opacity=".6"/>
+        <path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#29272d" stroke-width="19" stroke-linecap="round"/>
+        <path d="M70 211 Q33 234 59 267 Q75 279 91 260" fill="none" stroke="#77747a" stroke-width="12" stroke-linecap="round"/>
+        <path d="M118 273 L118 297 M202 273 L202 297" stroke="#d4c5ad" stroke-width="4" stroke-linecap="round"/>
+        <path class="bruise" d="M91 180 Q105 171 117 181 M203 181 Q215 171 229 180" fill="none" stroke="#a67db3" stroke-width="8" stroke-linecap="round"/>
+        <g class="bump">
+          <ellipse cx="222" cy="83" rx="24" ry="29" fill="#ffb0a3" stroke="#29272d" stroke-width="4"/>
+          <path d="M211 76 Q221 68 231 77 M218 89 L226 94" fill="none" stroke="#d86c70" stroke-width="3" stroke-linecap="round"/>
+        </g>
+        <g class="tear" fill="#79d6ff" stroke="#29272d" stroke-width="2">
+          <path d="M105 166 Q91 184 105 191 Q119 184 105 166Z"/>
+          <path d="M215 166 Q201 184 215 191 Q229 184 215 166Z"/>
+        </g>
+        <g stroke="#29272d" stroke-width="3" stroke-linecap="round">
+          <path d="M73 171 L49 166 M76 180 L52 184 M247 171 L271 166 M244 180 L268 184" fill="none"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hit-text" id="hitText">バシッ！</div>
+    <div class="fist" id="fist">👊</div>
+  </section>
+
+  <p class="hint" id="hint">猫をタップしてパンチ！　1パンチ = 1 XP</p>
+
+  <section class="progress-card">
+    <div class="progress-head"><span>🐾 猫のメンタル（？）</span><span id="levelText">生意気度 MAX</span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div class="stages">
+      <div class="stage active" data-stage-card="0"><span class="stage-icon">😼</span>生意気</div>
+      <div class="stage" data-stage-card="1"><span class="stage-icon">😾</span>たんこぶ</div>
+      <div class="stage" data-stage-card="2"><span class="stage-icon">😿</span>イライラ</div>
+      <div class="stage" data-stage-card="3"><span class="stage-icon">😭</span>泣きそう</div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button id="punch" type="button">👊 パンチ！</button>
+    <button id="reset" type="button">↻ 最初から</button>
   </div>
+  <div class="note">※ゲーム内のコミカルな演出です。現実の猫にはやさしくね。</div>
+</main>
 
-  <script>
-    let center = null;
-    let markers = [];
-    let active = null;
-    let currentCat = "カフェ";
+<script>
+const $ = (id) => document.getElementById(id);
+let xp = 0;
+let combo = 0;
+let lastPunch = 0;
+let audioContext;
 
-    const map = L.map("map", { zoomControl: false }).setView([35.6812, 139.7671], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19, attribution: "© OSM"
-    }).addTo(map);
-    L.control.zoom({ position: "bottomright" }).addTo(map);
+const speechByStage = [
+  "は？ なに見てんの？",
+  "いっっった！ 何すんの！",
+  "ちょっと！ いい加減にして！",
+  "も、もうやめてよぉ…"
+];
+const hitWords = ["バシッ！", "ポカッ！", "ドスッ！", "ペチン！", "ボコッ！"];
 
-    const $q = document.getElementById("q");
-    const $go = document.getElementById("go");
-    const $list = document.getElementById("list");
-    const $count = document.getElementById("count");
-    const $sheet = document.getElementById("sheet");
+function stageFor(value) {
+  if (value >= 20) return 3;
+  if (value >= 10) return 2;
+  if (value >= 4) return 1;
+  return 0;
+}
 
-    // カテゴリ選択
-    document.querySelectorAll(".cat").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".cat").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentCat = btn.dataset.q;
-      });
-    });
+function playSound() {
+  try {
+    audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioContext.state === "suspended") audioContext.resume();
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(220, now);
+    oscillator.frequency.exponentialRampToValueAtTime(95, now + 0.09);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.16, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.14);
+  } catch (error) {}
+}
 
-    async function geocode(text) {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(text)}&format=json&limit=1&countrycodes=jp`,
-        { headers: { "User-Agent": "YORIMICHI/1.0" } }
-      );
-      const data = await res.json();
-      if (!data[0]) return null;
-      return { lat: +data[0].lat, lng: +data[0].lon };
-    }
+function punch() {
+  xp += 1;
+  const now = Date.now();
+  combo = now - lastPunch < 1300 ? combo + 1 : 1;
+  lastPunch = now;
+  const stage = stageFor(xp);
 
-    async function fetchPOI(c, keyword) {
-      const p = new URLSearchParams({ limit: 25 });
-      if (keyword) p.set("q", keyword);
-      if (c) {
-        p.set("center", `${c.lng},${c.lat}`);
-        p.set("radius", 1200);
-      } else {
-        // 位置指定なしの場合は東京駅周辺
-        p.set("center", "139.7671,35.6812");
-        p.set("radius", 800);
-        if (!keyword) p.set("q", "カフェ");
-      }
-      const res = await fetch(`https://api.openpoiapi.com/v1/search?${p}`);
-      if (!res.ok) throw new Error("APIエラー");
-      const json = await res.json();
-      return (json.results || [])
-        .filter(r => r.lat && r.lng && r.name)
-        .map((r, i) => ({
-          id: i,
-          name: r.name.replace(/^１Ｆ\s*|^1F\s*/i, "").trim(),
-          addr: r.address || [r.prefecture, r.city].filter(Boolean).join(""),
-          lat: r.lat,
-          lng: r.lng,
-          cat: r.category || r.business_type || ""
-        }));
-    }
+  $("score").textContent = xp;
+  $("xp").textContent = xp;
+  $("cat").dataset.stage = stage;
+  $("speech").textContent = speechByStage[stage];
+  $("hitText").textContent = hitWords[Math.floor(Math.random() * hitWords.length)];
+  $("hitText").classList.remove("show");
+  $("fist").classList.remove("show");
+  $("catWrap").classList.remove("punched");
+  void $("catWrap").offsetWidth;
+  $("catWrap").classList.add("punched");
+  $("hitText").classList.add("show");
+  $("fist").classList.add("show");
+  $("fill").style.width = Math.min(xp / 20 * 100, 100) + "%";
+  $("levelText").textContent = ["生意気度 MAX", "たんこぶ発生中", "怒りゲージ上昇", "涙目モード"][stage];
+  $("hint").textContent = combo >= 3 ? `🔥 ${combo}コンボ！　+1 XP` : "1パンチ = 1 XP";
+  document.querySelectorAll("[data-stage-card]").forEach(card => {
+    card.classList.toggle("active", Number(card.dataset.stageCard) === stage);
+  });
+  if (xp >= 20 && xp % 10 === 0) $("speech").textContent = "うぅ…もう無理ぃ…";
+  playSound();
+}
 
-    function clearMarkers() {
-      markers.forEach(m => map.removeLayer(m));
-      markers = [];
-    }
-
-    function putMarkers(items) {
-      clearMarkers();
-      if (!items.length) return;
-      const bounds = [];
-      items.forEach(p => {
-        const icon = L.divIcon({
-          className: "",
-          html: `<div class="pin"><span>📍</span></div>`,
-          iconSize: [34, 34],
-          iconAnchor: [17, 34],
-          popupAnchor: [0, -34]
-        });
-        const m = L.marker([p.lat, p.lng], { icon })
-          .addTo(map)
-          .bindPopup(`<b>${p.name}</b><div style="color:#6b7280;font-size:12px;margin-top:3px">${p.addr || ""}</div>`);
-        m.on("click", () => {
-          active = p.id;
-          render(items);
-        });
-        markers.push(m);
-        bounds.push([p.lat, p.lng]);
-      });
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-    }
-
-    function render(items) {
-      if (!items.length) {
-        $list.innerHTML = `<div class="empty">見つかりませんでした<br>場所やジャンルを変えてみてください</div>`;
-        $count.textContent = "0件";
-        $sheet.classList.add("open");
-        return;
-      }
-      $count.innerHTML = `<b>${items.length}件</b>`;
-      $list.innerHTML = items.map(p => `
-        <div class="card ${active === p.id ? "on" : ""}" data-id="${p.id}">
-          <div class="card-icon">📍</div>
-          <div class="card-body">
-            <div class="card-name">${p.name}</div>
-            <div class="card-addr">${p.addr || "住所情報なし"}</div>
-          </div>
-        </div>
-      `).join("");
-
-      $list.querySelectorAll(".card").forEach(el => {
-        el.onclick = () => {
-          const id = +el.dataset.id;
-          const p = items.find(x => x.id === id);
-          if (!p) return;
-          active = id;
-          render(items);
-          map.setView([p.lat, p.lng], 16);
-          const m = markers.find(mk => {
-            const ll = mk.getLatLng();
-            return Math.abs(ll.lat - p.lat) < 0.00005;
-          });
-          if (m) m.openPopup();
-        };
-      });
-      $sheet.classList.add("open");
-    }
-
-    async function run() {
-      $go.disabled = true;
-      $go.textContent = "…";
-      active = null;
-      $list.innerHTML = `<div class="empty">検索中…</div>`;
-      $sheet.classList.add("open");
-
-      try {
-        const text = $q.value.trim();
-        let c = null;
-        if (text && text !== "現在地") {
-          c = await geocode(text);
-          if (!c) throw new Error("場所が見つかりません");
-          center = c;
-        } else if (center && text === "現在地") {
-          c = center;
-        }
-
-        const items = await fetchPOI(c, currentCat);
-        putMarkers(items);
-        render(items);
-      } catch (e) {
-        $list.innerHTML = `<div class="empty">${e.message || "エラーが起きました"}</div>`;
-        $count.textContent = "エラー";
-        clearMarkers();
-      } finally {
-        $go.disabled = false;
-        $go.textContent = "探す";
-      }
-    }
-
-    $go.onclick = run;
-    $q.onkeydown = e => { if (e.key === "Enter") run(); };
-
-    document.getElementById("locBtn").onclick = () => {
-      if (!navigator.geolocation) return alert("位置情報非対応");
-      $go.disabled = true;
-      $go.textContent = "…";
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          center = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          $q.value = "現在地";
-          run();
-        },
-        () => {
-          alert("位置情報を取得できませんでした");
-          $go.disabled = false;
-          $go.textContent = "探す";
-        }
-      );
-    };
-
-    document.getElementById("clear").onclick = () => {
-      $q.value = "";
-      center = null;
-      active = null;
-      clearMarkers();
-      $list.innerHTML = `<div class="empty">駅名や地名を入れて「探す」を押してください</div>`;
-      $count.textContent = "場所を入れて探してください";
-      $sheet.classList.remove("open");
-      map.setView([35.6812, 139.7671], 13);
-    };
-  </script>
+function resetGame() {
+  xp = 0;
+  combo = 0;
+  lastPunch = 0;
+  $("score").textContent = "0";
+  $("xp").textContent = "0";
+  $("cat").dataset.stage = "0";
+  $("speech").textContent = speechByStage[0];
+  $("fill").style.width = "0%";
+  $("levelText").textContent = "生意気度 MAX";
+  $("hint").textContent = "猫をタップしてパンチ！　1パンチ = 1 XP";
+  $("hitText").classList.remove("show");
+  $("fist").classList.remove("show");
+  $("catWrap").classList.remove("punched");
+  document.querySelectorAll("[data-stage-card]").forEach(card => {
+    card.classList.toggle("active", Number(card.dataset.stageCard) === 0);
+  });
+}
+$("arena").addEventListener("pointerdown", punch);
+$("punch").addEventListener("click", punch);
+$("reset").addEventListener("click", (event) => {
+  event.stopPropagation();
+  resetGame();
+});
+</script>
 </body>
 </html>
